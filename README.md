@@ -22,7 +22,8 @@ The addon works with [ofxGUI](https://github.com/openframeworks/openFrameworks/t
 The structure of the control panel is simple :
 * the parameters are sent when the Send buttons are triggered:
 each of them sends to each different panels on the Digitakt.
-* All the parameters can be access and checked on the Digitakt after changes apart from the Compressor Pattern Volume.
+* All the parameters can be access and checked on the Digitakt after changes apart from the Compressor Pattern Volume,
+* the parameters are set for each channel, each channel is set in the mainParams.
 
 
 ## Getting Started
@@ -47,3 +48,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE)
 * [Dan Wilcox](https://github.com/danomatika/ofxMidi)
 
 :floppy_disk:
+
+## TODO
+negatives float values not working properly.
+Listeners on the sliders, and send to the digitakt without packages problems.
+Load the data from the Digitakt setup.
