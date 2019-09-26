@@ -5,6 +5,9 @@ Repository to control the parameters of the [Digitakt](https://www.elektron.se/p
 
 This isn't a real addon, but it has the parameters pre defined for easier control.
 
+Find a pre-Comlied version of it [here](./example/bin/example.app).
+You will need to have the 1.11 firmware or newer for the Digitakt, and MAC OS Mojave (10.14.6), or newer.
+
 
 - - - -
 
