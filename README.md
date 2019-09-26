@@ -15,7 +15,7 @@ You will need to have the 1.11 firmware or newer for the Digitakt, and MAC OS Mo
 
 ![.](assets/controls.png)
 
-[.](assets/digitaktControl.gif)
+![.](assets/digitaktControl.gif)
 
 
 - - - -
