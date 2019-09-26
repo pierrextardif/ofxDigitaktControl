@@ -139,41 +139,50 @@ void ofxDigitaktControl::setup(){
 
 //--------------------------------------------------------------
 void ofxDigitaktControl::update(){
-    if(midiTrackSend)
+    if(midiTrackSend){
         midiTrackSend = false;
         sendTrackMessages();
+    }
 
-    if(midiTrigSend)
+    if(midiTrigSend){
         midiTrigSend = false;
         sendTRIGMessages();
+    }
 
-    if(midiSrcSend)
+    if(midiSrcSend){
         midiSrcSend = false;
         sendSRCMessages();
+    }
 
-    if(midiFltrSend)
+    if(midiFltrSend){
         midiFltrSend = false;
         sendFLTRMessages();
+    }
 
-    if(midiAmpSend)
+    if(midiAmpSend){
         midiAmpSend = false;
         sendAMPMessages();
+    }
 
-    if(midiLfoSend)
+    if(midiLfoSend){
         midiLfoSend = false;
         sendLFOMessages();
+    }
 
-    if(midiDelaySend)
+    if(midiDelaySend){
         midiDelaySend = false;
         sendDelayMessages();
+    }
 
-    if(midiReverbSend)
+    if(midiReverbSend){
         midiReverbSend = false;
         sendReverbMessages();
+    }
 
-    if(midiCompressorSend)
+    if(midiCompressorSend){
         midiCompressorSend = false;
         sendCompressorMessages();
+    }
 }
 
 //--------------------------------------------------------------
@@ -197,6 +206,8 @@ void ofxDigitaktControl::exit(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::listenToChannel(int& channel){
     channelUnsigned = 0xB0 | (unsigned char)channel;
+    
+    cout << "this is the channel :  " << channel << endl;
     
 }
 
