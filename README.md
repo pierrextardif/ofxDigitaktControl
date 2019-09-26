@@ -1,7 +1,7 @@
 # ofxDigitaktControl
 
 Repository to control the parameters of the [Digitakt](https://www.elektron.se/products/digitakt/) from [Openframeworks](https://openframeworks.cc/)
-[.](assets/digitaktControl.gif).
+
 
 This isn't a real addon, but it has the parameters pre defined for easier control.
 
@@ -11,10 +11,11 @@ You will need to have the 1.11 firmware or newer for the Digitakt, and MAC OS Mo
 
 - - - -
 
-![.](assets/1.png)
-
+![.](assets/digitakt.png)
 
 ![.](assets/controls.png)
+
+[.](assets/digitaktControl.gif)
 
 
 - - - -
