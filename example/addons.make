@@ -1,0 +1,3 @@
+ofxDigitaktControl
+ofxGui
+ofxMidi
