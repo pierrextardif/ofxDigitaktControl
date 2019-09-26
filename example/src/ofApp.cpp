@@ -12,7 +12,6 @@ void ofApp::setup() {
     
 }
 
-
 //--------------------------------------------------------------
 void ofApp::update() {
     digitakt.update();

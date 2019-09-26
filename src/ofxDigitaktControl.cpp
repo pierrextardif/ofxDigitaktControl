@@ -8,11 +8,9 @@
 
 void ofxDigitaktControl::setup(){
     
-    // print the available output ports to the console
-   midiOut.listOutPorts();
-   
-   // connect
-   midiOut.openPort(0); // by number
+    midiOut.listOutPorts();
+    // connect
+    midiOut.openPort(0); // by number
 
     mainGui.setup("mainParams");
     trackTrigGUI.setup("Track & Trigger");
@@ -134,71 +132,51 @@ void ofxDigitaktControl::setup(){
     srcFltrGUI.setPosition(5, 280);
     ampLfoGUI.setPosition(206, 2);
     effectsGUI.setPosition(407, 2);
-    
-    
+
+
     channelGUI.addListener(this, &ofxDigitaktControl::listenToChannel);
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::update(){
-    
-        if(midiTrackSend){
-            
-            midiTrackSend = false;
-            sendTrackMessages();
-        }
-        if(midiTrigSend){
-    
-            midiTrigSend = false;
-//            channelUnsigned = 0xB0 | (unsigned char)channelGUI;
-            
-            sendTRIGMessages();
-        }
-        
-        if(midiSrcSend){
-    
-            midiSrcSend = false;
-//            channelUnsigned = 0xB0 | (unsigned char)channelGUI;
-            
-            sendSRCMessages();
-        }
-        if(midiFltrSend){
-            midiFltrSend = false;
-//            channelUnsigned = 0xB0 | (unsigned char)channelGUI;
-            
-            sendFLTRMessages();
-        }
-        if(midiAmpSend){
-            midiAmpSend = false;
-//            channelUnsigned = 0xB0 | (unsigned char)channelGUI;
-            
-            sendAMPMessages();
-        }
-        if(midiLfoSend){
-            midiLfoSend = false;
-//            channelUnsigned = 0xB0 | (unsigned char)channelGUI;
-            
-            sendLFOMessages();
-        }
-        if(midiDelaySend){
-            midiDelaySend = false;
-//            channelUnsigned = 0xB0 | (unsigned char)channelGUI;
-            
-            sendDelayMessages();
-        }
-        if(midiReverbSend){
-            midiReverbSend = false;
-//            channelUnsigned = 0xB0 | (unsigned char)channelGUI;
-            
-            sendReverbMessages();
-        }
-        if(midiCompressorSend){
-            midiCompressorSend = false;
-//            channelUnsigned = 0xB0 | (unsigned char)channelGUI;
-            
-            sendCompressorMessages();
-        }
+    if(midiTrackSend)
+        midiTrackSend = false;
+        sendTrackMessages();
+
+    if(midiTrigSend)
+        midiTrigSend = false;
+        sendTRIGMessages();
+
+    if(midiSrcSend)
+        midiSrcSend = false;
+        sendSRCMessages();
+
+    if(midiFltrSend)
+        midiFltrSend = false;
+        sendFLTRMessages();
+
+    if(midiAmpSend)
+        midiAmpSend = false;
+        sendAMPMessages();
+
+    if(midiLfoSend)
+        midiLfoSend = false;
+        sendLFOMessages();
+
+    if(midiDelaySend)
+        midiDelaySend = false;
+        sendDelayMessages();
+
+    if(midiReverbSend)
+        midiReverbSend = false;
+        sendReverbMessages();
+
+    if(midiCompressorSend)
+        midiCompressorSend = false;
+        sendCompressorMessages();
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::draw(){
     mainGui.draw();
     trackTrigGUI.draw();
@@ -207,24 +185,26 @@ void ofxDigitaktControl::draw(){
     effectsGUI.draw();
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::exit(){
     
     // clean up
     midiOut.closePort();
     
-    
     channelGUI.removeListener(this, &ofxDigitaktControl::listenToChannel);
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::listenToChannel(int& channel){
     channelUnsigned = 0xB0 | (unsigned char)channel;
     
 }
+
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendTrackMessages(){
 
     unsigned char trackMuteUnsigned = (unsigned char)trackMute << 0x00;
     unsigned char trackLevelUnsigned = (unsigned char)trackLevel << 0x00;
-    
 //    cout << "trackLevelUnsigned = " << hex(trackLevelUnsigned) << endl;
     
     midiOut << StartMidi() << MIDI_SYSEX
@@ -243,6 +223,8 @@ void ofxDigitaktControl::sendTrackMessages(){
     << MIDI_SYSEX_END << FinishMidi();
     
 }
+
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendTRIGMessages(){
 
     unsigned char trigNoteUnsigned = (unsigned char)(trigNote) << 0x00;
@@ -259,7 +241,7 @@ void ofxDigitaktControl::sendTRIGMessages(){
     
     << TRIGNOTEHEX
     << trigNoteUnsigned
-//
+
     << TRIGVELOCITYHEX
     << trigVelocityUnsigned
     
@@ -277,6 +259,7 @@ void ofxDigitaktControl::sendTRIGMessages(){
     
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendSRCMessages(){
     
     unsigned char tuneUnsigned = (unsigned char)(srcTune) << 0x00;
@@ -327,12 +310,9 @@ void ofxDigitaktControl::sendSRCMessages(){
     << channelUnsigned << 0x06 << 0x00
     << channelUnsigned << 0x26 << 0x00
     << MIDI_SYSEX_END << FinishMidi();
-    
-//    cout << "sending Sample Slot :" << endl;
-//    cout << "On channel : " << ofToString(channelGUI) << endl;
-//    cout << "with sampleSlot : " << ofToString(sampleSlot) << endl;
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendFLTRMessages(){
     
     unsigned char fltrAttackUnsigned = (unsigned char)(fltrAttack) << 0x00;
@@ -374,14 +354,12 @@ void ofxDigitaktControl::sendFLTRMessages(){
     
     << FLTRRENVDEPTHHEX
     << fltrEnvelopUnsigned
-
-//    << SAMPLESLOTHEX
-//    << sampleUnsigned
     << channelUnsigned << 0x06 << 0x00
     << channelUnsigned << 0x26 << 0x00
     << MIDI_SYSEX_END << FinishMidi();
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendAMPMessages(){
 
     unsigned char fltrAttackUnsigned = (unsigned char)(ampAttack) << 0x00;
@@ -423,14 +401,12 @@ void ofxDigitaktControl::sendAMPMessages(){
     
     << AMPVOLUMEHEX
     << fltrEnvelopUnsigned
-
-//    << SAMPLESLOTHEX
-//    << sampleUnsigned
     << channelUnsigned << 0x06 << 0x00
     << channelUnsigned << 0x26 << 0x00
     << MIDI_SYSEX_END << FinishMidi();
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendLFOMessages(){
 
     unsigned char lfoSpeedUnsigned = (unsigned char)lfoSpeed << 0x00;
@@ -479,6 +455,7 @@ void ofxDigitaktControl::sendLFOMessages(){
 
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendDelayMessages(){
 
     unsigned char delayTimeUnsigned = (unsigned char)delayTime << 0x00;
@@ -527,6 +504,7 @@ void ofxDigitaktControl::sendDelayMessages(){
 
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendReverbMessages(){
 
     unsigned char reverbPreDelayUnsigned = (unsigned char)reverbPreDelay << 0x00;
@@ -575,6 +553,7 @@ void ofxDigitaktControl::sendReverbMessages(){
 
 }
 
+//--------------------------------------------------------------
 void ofxDigitaktControl::sendCompressorMessages(){
 
     unsigned char compressorThresholdUnsigned = (unsigned char)compressorThreshold << 0x00;
