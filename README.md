@@ -22,7 +22,7 @@ The addon works with [ofxGUI](https://github.com/openframeworks/openFrameworks/t
 The structure of the control panel is simple :
 * the parameters are sent when the Send buttons are triggered:
 each of them sends to each different panels on the Digitakt.
-*
+* All the parameters can be access and checked on the Digitakt after changes apart from the Compressor Pattern Volume.
 
 
 ## Getting Started
