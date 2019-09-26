@@ -1,6 +1,5 @@
 //
 //  ofxDigitaktControl.cpp
-//  example
 //
 //  Created by Pierre Tardif on 26/09/2019.
 //

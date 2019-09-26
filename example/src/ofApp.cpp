@@ -6,6 +6,7 @@ void ofApp::setup() {
     ofSetVerticalSync(true);
     ofBackground(255);
     ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetWindowTitle("Digitakt Midi Control");
     
     digitakt.setup();
     
