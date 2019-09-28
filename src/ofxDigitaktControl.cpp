@@ -291,7 +291,7 @@ void ofxDigitaktControl::sendSRCMessages(){
     
     << channelUnsigned << 0x63 << TUNEMSBHEX << channelUnsigned << 0x62 << TUNELSBHEX
     << channelUnsigned << 0x06 << tuneUnsignedMSB
-//    << channelUnsigned << 0x26 << 0x00
+    << channelUnsigned << 0x26 << tuneUnsignedLSB
     << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
     
     << channelUnsigned
