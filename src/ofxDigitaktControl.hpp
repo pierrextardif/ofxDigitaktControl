@@ -46,13 +46,13 @@ class ofxDigitaktControl{
     ofParameterGroup midiTrig;
     ofParameter < int > trigNote;
     ofParameter < int > trigVelocity;
-    ofParameter < float > trigLength;
+    ofParameter < int > trigLength;
     ofParameter < bool > trigFilterTrig;
     ofParameter < bool > trigLFOTrig;
     ofParameter < bool > midiTrigSend;
     
     ofParameterGroup midiSrc;
-    ofParameter < int > srcTune;
+    ofParameter < float > srcTune;
     ofParameter < int > srcPlayMode;
     ofParameter < int > srcBitReduction;
     ofParameter < float > srcStart;
@@ -144,6 +144,10 @@ class ofxDigitaktControl{
     void sendDelayMessages();
     void sendReverbMessages();
     void sendCompressorMessages();
+    
+    unsigned char getMSB(float slider);
+    unsigned char getLSB(float slider);
+
 };
 
 #endif /* ofxDigitaktControl_hpp */

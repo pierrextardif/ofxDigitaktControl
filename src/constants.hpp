@@ -24,7 +24,8 @@
 #define TRIGLFOTRIGHEX              0x0E
 
 // SRC
-#define TUNEHEX                     0x10
+#define TUNEMSBHEX                  0x01
+#define TUNELSBHEX                  0x00
 #define PLAYMODEHEX                 0x11
 #define BITREDUCTIONHEX             0x12
 #define SAMPLESLOTHEX               0x13
@@ -95,6 +96,8 @@
 #define COMPRESSORSIDECHNFLTRHEX    0x75
 #define COMPRESSORDRYWETMIXHEX      0x76
 
+// DEV
+#define PRINT 1
 
 struct HexCharStruct
 {

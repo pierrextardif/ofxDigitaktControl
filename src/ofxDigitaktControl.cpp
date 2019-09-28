@@ -28,13 +28,13 @@ void ofxDigitaktControl::setup(){
     midiReverb.setName("REVERB");
     midiCompressor.setName("COMPRESSOR");
 
-    mainGui.add(channelGUI.set("channel", 0, 0, 7));
+    mainGui.add(channelGUI.set("channel", 1, 1, 8));
 
     midiTrack.add(trackMute.set("Mute", false));
     midiTrack.add(trackLevel.set("Level",50, 0, 127));
     midiTrack.add(midiTrackSend.set("Send TRACK", false));
 
-    midiTrig.add(trigNote.set("Note", 63, 0, 127));
+    midiTrig.add(trigNote.set("Note", 0, -24, 24));
     midiTrig.add(trigVelocity.set("Velocity", 60, 0, 127));
     midiTrig.add(trigLength.set("Length", 63, 0, 127));
     midiTrig.add(trigFilterTrig.set("Filter Trig", false));
@@ -49,8 +49,7 @@ void ofxDigitaktControl::setup(){
     midiSrc.add(srcFinish.set("Finish", 0, 0, 120));
     midiSrc.add(srcLoop.set("Loop", 0, 0, 120));
     midiSrc.add(srcSampleLevel.set("Level", 127, 0, 127));
-    midiSrc.add(midiSrcSend.set
-                ("Send SRC", false));
+    midiSrc.add(midiSrcSend.set("Send SRC", false));
 
     midiFLTR.add(fltrAttack.set("Attack", 0, 0, 127));
     midiFLTR.add(fltrDecay.set("Decay", 0, 0, 127));
@@ -135,6 +134,7 @@ void ofxDigitaktControl::setup(){
 
 
     channelGUI.addListener(this, &ofxDigitaktControl::listenToChannel);
+    channelUnsigned = 0xB0 | (unsigned char)(channelGUI-1);
 }
 
 //--------------------------------------------------------------
@@ -205,9 +205,9 @@ void ofxDigitaktControl::exit(){
 
 //--------------------------------------------------------------
 void ofxDigitaktControl::listenToChannel(int& channel){
-    channelUnsigned = 0xB0 | (unsigned char)channel;
+    channelUnsigned = 0xB0 | (unsigned char)(channel-1);
     
-    cout << "this is the channel :  " << channel << endl;
+    if(PRINT)cout << "this is the channel :  " << channel << endl;
     
 }
 
@@ -215,14 +215,14 @@ void ofxDigitaktControl::listenToChannel(int& channel){
 void ofxDigitaktControl::sendTrackMessages(){
 
     unsigned char trackMuteUnsigned = (unsigned char)trackMute << 0x00;
-    unsigned char trackLevelUnsigned = (unsigned char)trackLevel << 0x00;
-//    cout << "trackLevelUnsigned = " << hex(trackLevelUnsigned) << endl;
+    unsigned char trackLevelUnsigned = (unsigned char)(trackLevel) << 0x00;
     
     midiOut << StartMidi() << MIDI_SYSEX
     << 0x00 << 0x20 << 0x3C
     << 0x00
-    << channelUnsigned
     
+    << channelUnsigned
+
     << TRACKMUTEHEX
     << trackMuteUnsigned
 
@@ -238,7 +238,7 @@ void ofxDigitaktControl::sendTrackMessages(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendTRIGMessages(){
 
-    unsigned char trigNoteUnsigned = (unsigned char)(trigNote) << 0x00;
+    unsigned char trigNoteUnsigned = (unsigned char)(ofMap(trigNote, -24, 24, 34, 84)) << 0x00;
     unsigned char trigVelocityUnsigned = (unsigned char)trigVelocity << 0x00;
     unsigned char trigLengthUnsigned = (unsigned char)trigLength << 0x00;
     unsigned char trigFilterTrigUnsigned = (unsigned char)trigFilterTrig << 0x00;
@@ -249,10 +249,10 @@ void ofxDigitaktControl::sendTRIGMessages(){
     << 0x00 << 0x20 << 0x3C
     << 0x00
     << channelUnsigned
-    
+
     << TRIGNOTEHEX
     << trigNoteUnsigned
-
+    
     << TRIGVELOCITYHEX
     << trigVelocityUnsigned
     
@@ -261,7 +261,7 @@ void ofxDigitaktControl::sendTRIGMessages(){
 
     << TRIGFLTRTRIGHEX
     << trigFilterTrigUnsigned
-    
+
     << TRIGLFOTRIGHEX
     << trigLFOTrigUnsigned
     << channelUnsigned << 0x06 << 0x00
@@ -273,13 +273,8 @@ void ofxDigitaktControl::sendTRIGMessages(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendSRCMessages(){
     
-    unsigned char tuneUnsigned = (unsigned char)(srcTune) << 0x00;
-    //        unsigned char tuneUnsigned = (unsigned char)((ofMap(tune, -24, 24, 0, 100)* 0.53125 - 26.96875)) << 0x00;
-    //        tuneUnsigned = 0x2f;
-    //        tuneUnsigned = 0x5f; // does not send to 23.5 but 24
-    //        tuneUnsigned = 0x51;
-
-    //        std::cout << "tuneUnsigned = " << hex(tuneUnsigned) << endl;
+    unsigned char tuneUnsignedMSB = getMSB(ofMap(floor(srcTune), -24, 24, 41, 88));
+    unsigned char tuneUnsignedLSB = getLSB(ofMap(srcTune - floor(srcTune), 0, 1, 0, 127));
     unsigned char playModeUnsigned = (unsigned char)(srcPlayMode) << 0x00;
     unsigned char bitReductionUnsigned = (unsigned char)srcBitReduction << 0x00;
     unsigned char sampleUnsigned = (unsigned char)srcSampleSlot << 0x00;
@@ -292,17 +287,18 @@ void ofxDigitaktControl::sendSRCMessages(){
     midiOut << StartMidi() << MIDI_SYSEX
     << 0x00 << 0x20 << 0x3C
     << 0x00
+    
+    
+    << channelUnsigned << 0x63 << TUNEMSBHEX << channelUnsigned << 0x62 << TUNELSBHEX
+    << channelUnsigned << 0x06 << tuneUnsignedMSB
+//    << channelUnsigned << 0x26 << 0x00
+    << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
+    
     << channelUnsigned
-    
-//    << TUNEHEX
-//    << tuneUnsigned
-//        << 0x10
-    
     << PLAYMODEHEX
     << playModeUnsigned
-//
-    << STARTHEX
-    << startUnsigned
+    
+    << channelUnsigned
     
     << LENGTHHEX
     << finishUnsigned
@@ -354,9 +350,6 @@ void ofxDigitaktControl::sendFLTRMessages(){
     << FLTRRELEASEHEX
     << fltrReleaseUnsigned
     
-    << FLTRFREQHEX
-    << frequencyUnsigned
-
     << FLTRRESONNANCEHEX
     << resonnanceUnsigned
     
@@ -616,3 +609,28 @@ void ofxDigitaktControl::sendCompressorMessages(){
     << MIDI_SYSEX_END << FinishMidi();
 
 }
+
+//--------------------------------------------------------------
+unsigned char ofxDigitaktControl::getMSB(float slider){
+    unsigned char val = 0x00;
+    
+    val = ((unsigned char )slider) << 0x00;
+    
+    if(PRINT)cout << "slider = " << ofToString(slider) << endl;
+    if(PRINT)cout << "MSB is now : " << hex(val) << endl;
+    return val;
+}
+
+//--------------------------------------------------------------
+unsigned char ofxDigitaktControl::getLSB(float slider){
+    unsigned char val = 0x00;
+    // fract, then * 100, then floor part, to get the val between 0 and 100
+//    int frac = floor(100 * (slider - floor(slider)));
+    
+    val = ((unsigned char) slider) << 0x00;
+    
+//    if(PRINT)cout << "frac = " << ofToString(frac) << endl;
+    if(PRINT)cout << "LSB is now : " << hex(val) << endl;
+    return val;
+}
+

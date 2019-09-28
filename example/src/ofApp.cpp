@@ -24,6 +24,14 @@ void ofApp::draw() {
 }
 
 //--------------------------------------------------------------
+void ofApp::keyPressed(int key) {
+
+    if(key == ' ') {
+        digitakt.midiSrcSend = true;
+    };
+}
+
+//--------------------------------------------------------------
 void ofApp::exit() {
     
     // clean up
