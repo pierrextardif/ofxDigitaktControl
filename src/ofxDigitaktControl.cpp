@@ -273,14 +273,24 @@ void ofxDigitaktControl::sendTRIGMessages(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendSRCMessages(){
     
-    unsigned char tuneUnsignedMSB = getMSB(ofMap(floor(srcTune), -24, 24, 41, 88));
-    unsigned char tuneUnsignedLSB = getLSB(ofMap(srcTune - floor(srcTune), 0, 1, 0, 127));
+    unsigned char tuneUnsignedMSB = (unsigned char)((ofMap(floor(srcTune), -24, 24, 41, 88))) << 0x00;
+    unsigned char tuneUnsignedLSB = (unsigned char)((ofMap(srcTune - floor(srcTune), 0, 1, 0, 127))) << 0x00;
+    
     unsigned char playModeUnsigned = (unsigned char)(srcPlayMode) << 0x00;
     unsigned char bitReductionUnsigned = (unsigned char)srcBitReduction << 0x00;
     unsigned char sampleUnsigned = (unsigned char)srcSampleSlot << 0x00;
-    unsigned char startUnsigned = (unsigned char)srcStart << 0x00;
-    unsigned char finishUnsigned = (unsigned char)srcFinish << 0x00;
-    unsigned char loopUnsigned = (unsigned char)srcLoop << 0x00;
+    
+    unsigned char startUnsignedMSB = (unsigned char)(floor(srcStart)) << 0x00;
+    unsigned char startUnsignedLSB = (unsigned char)(ofMap(srcStart - floor(srcStart), 0, 1, 0, 127)) << 0x00;
+    
+    unsigned char lenghtUnsignedMSB = (unsigned char)(floor(srcFinish)) << 0x00;
+    unsigned char lengthUnsignedLSB = (unsigned char)(ofMap(srcFinish - floor(srcFinish), 0, 1, 0, 127)) << 0x00;
+    
+    
+    unsigned char loopUnsignedMSB = (unsigned char)(floor(srcLoop)) << 0x00;
+    unsigned char loopUnsignedLSB = (unsigned char)(ofMap(srcLoop - floor(srcLoop), 0, 1, 0, 127)) << 0x00;
+    
+//    unsigned char loopUnsigned = (unsigned char)srcLoop << 0x00;
     unsigned char sampleLevelUnsigned = (unsigned char)srcSampleLevel << 0x00;
     
     
@@ -288,32 +298,45 @@ void ofxDigitaktControl::sendSRCMessages(){
     << 0x00 << 0x20 << 0x3C
     << 0x00
     
-    
-    << channelUnsigned << 0x63 << TUNEMSBHEX << channelUnsigned << 0x62 << TUNELSBHEX
+    // TUNE MESSAGE WITH NRPN
+    << channelUnsigned << 0x63 << SRCTUNEMSBHEX << channelUnsigned << 0x62 << SRCTUNELSBHEX
     << channelUnsigned << 0x06 << tuneUnsignedMSB
     << channelUnsigned << 0x26 << tuneUnsignedLSB
     << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
     
     << channelUnsigned
-    << PLAYMODEHEX
+    << SRCPLAYMODEHEX
     << playModeUnsigned
     
-    << channelUnsigned
-    
-    << LENGTHHEX
-    << finishUnsigned
-
-    << LOOPHEX
-    << loopUnsigned
-    
-    << BITREDUCTIONHEX
+    << SRCBITREDUCTIONHEX
     << bitReductionUnsigned
 
-    << SAMPLELEVEL
-    << sampleLevelUnsigned
-
-    << SAMPLESLOTHEX
+    << SRCSAMPLESLOTHEX
     << sampleUnsigned
+    
+    
+    // START MESSAGE WITH NRPN
+    << channelUnsigned << 0x63 << SRCSTARTMSBHEX << channelUnsigned << 0x62 << SRCSTARTLSBHEX
+    << channelUnsigned << 0x06 << startUnsignedMSB
+    << channelUnsigned << 0x26 << startUnsignedLSB
+    << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
+    
+    // LENGTH MESSAGE WITH NRPN
+    << channelUnsigned << 0x63 << SRCLENGTHMSBHEX << channelUnsigned << 0x62 << SRCLENGTHLSBHEX
+    << channelUnsigned << 0x06 << lenghtUnsignedMSB
+    << channelUnsigned << 0x26 << lengthUnsignedLSB
+    << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
+    
+    // LOOP MESSAGE WITH NRPN
+    << channelUnsigned << 0x63 << SRCLOOPMSBHEX << channelUnsigned << 0x62 << SRCLOOPLSBHEX
+    << channelUnsigned << 0x06 << loopUnsignedMSB
+    << channelUnsigned << 0x26 << loopUnsignedLSB
+    << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
+    
+    << channelUnsigned
+    << SRCSAMPLELEVEL
+    << sampleLevelUnsigned
+    
     << channelUnsigned << 0x06 << 0x00
     << channelUnsigned << 0x26 << 0x00
     << MIDI_SYSEX_END << FinishMidi();
@@ -609,28 +632,3 @@ void ofxDigitaktControl::sendCompressorMessages(){
     << MIDI_SYSEX_END << FinishMidi();
 
 }
-
-//--------------------------------------------------------------
-unsigned char ofxDigitaktControl::getMSB(float slider){
-    unsigned char val = 0x00;
-    
-    val = ((unsigned char )slider) << 0x00;
-    
-    if(PRINT)cout << "slider = " << ofToString(slider) << endl;
-    if(PRINT)cout << "MSB is now : " << hex(val) << endl;
-    return val;
-}
-
-//--------------------------------------------------------------
-unsigned char ofxDigitaktControl::getLSB(float slider){
-    unsigned char val = 0x00;
-    // fract, then * 100, then floor part, to get the val between 0 and 100
-//    int frac = floor(100 * (slider - floor(slider)));
-    
-    val = ((unsigned char) slider) << 0x00;
-    
-//    if(PRINT)cout << "frac = " << ofToString(frac) << endl;
-    if(PRINT)cout << "LSB is now : " << hex(val) << endl;
-    return val;
-}
-

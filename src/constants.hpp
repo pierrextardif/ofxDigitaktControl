@@ -24,15 +24,19 @@
 #define TRIGLFOTRIGHEX              0x0E
 
 // SRC
-#define TUNEMSBHEX                  0x01
-#define TUNELSBHEX                  0x00
-#define PLAYMODEHEX                 0x11
-#define BITREDUCTIONHEX             0x12
-#define SAMPLESLOTHEX               0x13
-#define STARTHEX                    0x14
-#define LENGTHHEX                   0x15
-#define LOOPHEX                     0x16
-#define SAMPLELEVEL                 0x17
+#define SRCTUNEMSBHEX               0x01
+#define SRCTUNELSBHEX               0x00
+#define SRCPLAYMODEHEX              0x11
+#define SRCBITREDUCTIONHEX          0x12
+#define SRCSAMPLESLOTHEX            0x13
+#define SRCSTARTMSBHEX              0x01
+#define SRCSTARTLSBHEX              0x04
+#define SRCLENGTHMSBHEX             0x01
+#define SRCLENGTHLSBHEX             0x05
+#define SRCLOOPMSBHEX               0x01
+#define SRCLOOPLSBHEX               0x06
+
+#define SRCSAMPLELEVEL              0x17
 
 // FLTR
 #define FLTRATTACKHEX               0x46

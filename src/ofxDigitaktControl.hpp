@@ -144,9 +144,6 @@ class ofxDigitaktControl{
     void sendDelayMessages();
     void sendReverbMessages();
     void sendCompressorMessages();
-    
-    unsigned char getMSB(float slider);
-    unsigned char getLSB(float slider);
 
 };
 
