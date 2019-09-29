@@ -67,7 +67,7 @@ void ofxDigitaktControl::setup(){
     midiAMP.add(ampOverdrive.set("Overdrive", 0, 0, 127));
     midiAMP.add(ampDelay.set("Delay", 0, 0, 127));
     midiAMP.add(ampReverb.set("Reverb", 0, 0, 127));
-    midiAMP.add(ampPan.set("Pan", 0, 0, 127));
+    midiAMP.add(ampPan.set("Pan", 0, -64, 63));
     midiAMP.add(ampVolume.set("Volume", 0, 0, 127));
     midiAMP.add(midiAmpSend.set("Send AMP", false));
 
@@ -217,21 +217,17 @@ void ofxDigitaktControl::sendTrackMessages(){
     unsigned char trackMuteUnsigned = (unsigned char)trackMute << 0x00;
     unsigned char trackLevelUnsigned = (unsigned char)(trackLevel) << 0x00;
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
     
-    << channelUnsigned
-
-    << TRACKMUTEHEX
-    << trackMuteUnsigned
-
-    << TRACKLEVELHEX
-    << trackLevelUnsigned
-
-    << channelUnsigned << 0x06 << trackLevelUnsigned
-    << channelUnsigned << 0x26 << trackLevelUnsigned
-    << MIDI_SYSEX_END << FinishMidi();
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(TRACKMUTEHEX);
+    midiSysExMsg.push_back(trackMuteUnsigned);
+    midiSysExMsg.push_back(TRACKLEVELHEX);
+    midiSysExMsg.push_back(trackLevelUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
+    
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
     
 }
 
@@ -244,29 +240,26 @@ void ofxDigitaktControl::sendTRIGMessages(){
     unsigned char trigFilterTrigUnsigned = (unsigned char)trigFilterTrig << 0x00;
     unsigned char trigLFOTrigUnsigned = (unsigned char)trigLFOTrig << 0x00;
     
+    // start Message
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
-    << channelUnsigned
-
-    << TRIGNOTEHEX
-    << trigNoteUnsigned
+    // CC Messages
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(TRIGNOTEHEX);
+    midiSysExMsg.push_back(trigNoteUnsigned);
+    midiSysExMsg.push_back(TRIGVELOCITYHEX);
+    midiSysExMsg.push_back(trigVelocityUnsigned);
+    midiSysExMsg.push_back(TRIGLENGTHHEX);
+    midiSysExMsg.push_back(trigLengthUnsigned);
+    midiSysExMsg.push_back(TRIGFLTRTRIGHEX);
+    midiSysExMsg.push_back(trigFilterTrigUnsigned);
+    midiSysExMsg.push_back(TRIGLFOTRIGHEX);
+    midiSysExMsg.push_back(trigLFOTrigUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
     
-    << TRIGVELOCITYHEX
-    << trigVelocityUnsigned
-    
-    << TRIGLENGTHHEX
-    << trigLengthUnsigned
-
-    << TRIGFLTRTRIGHEX
-    << trigFilterTrigUnsigned
-
-    << TRIGLFOTRIGHEX
-    << trigLFOTrigUnsigned
-    << channelUnsigned << 0x06 << 0x00
-    << channelUnsigned << 0x26 << 0x00
-    << MIDI_SYSEX_END << FinishMidi();
+    // end & send Message
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
     
 }
 
@@ -290,56 +283,32 @@ void ofxDigitaktControl::sendSRCMessages(){
     unsigned char loopUnsignedMSB = (unsigned char)(floor(srcLoop)) << 0x00;
     unsigned char loopUnsignedLSB = (unsigned char)(ofMap(srcLoop - floor(srcLoop), 0, 1, 0, 127)) << 0x00;
     
-//    unsigned char loopUnsigned = (unsigned char)srcLoop << 0x00;
     unsigned char sampleLevelUnsigned = (unsigned char)srcSampleLevel << 0x00;
     
+    // start Message
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
+    //NRPN messages
+    addNRPNMessage(&midiSysExMsg, SRCTUNEMSBHEX, SRCTUNELSBHEX, tuneUnsignedMSB, tuneUnsignedLSB);
+    addNRPNMessage(&midiSysExMsg, SRCSTARTMSBHEX, SRCSTARTLSBHEX, startUnsignedMSB, startUnsignedLSB);
+    addNRPNMessage(&midiSysExMsg, SRCLENGTHMSBHEX, SRCLENGTHMSBHEX, lenghtUnsignedMSB, lengthUnsignedLSB);
+    addNRPNMessage(&midiSysExMsg, SRCLOOPMSBHEX, SRCLOOPLSBHEX, loopUnsignedMSB, loopUnsignedMSB);
     
-    // TUNE MESSAGE WITH NRPN
-    << channelUnsigned << 0x63 << SRCTUNEMSBHEX << channelUnsigned << 0x62 << SRCTUNELSBHEX
-    << channelUnsigned << 0x06 << tuneUnsignedMSB
-    << channelUnsigned << 0x26 << tuneUnsignedLSB
-    << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
+    // CC Messages
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(SRCPLAYMODEHEX);
+    midiSysExMsg.push_back(playModeUnsigned);
+    midiSysExMsg.push_back(SRCBITREDUCTIONHEX);
+    midiSysExMsg.push_back(bitReductionUnsigned);
+    midiSysExMsg.push_back(SRCSAMPLESLOTHEX);
+    midiSysExMsg.push_back(sampleUnsigned);
+    midiSysExMsg.push_back(SRCSAMPLELEVEL);
+    midiSysExMsg.push_back(sampleLevelUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
     
-    << channelUnsigned
-    << SRCPLAYMODEHEX
-    << playModeUnsigned
-    
-    << SRCBITREDUCTIONHEX
-    << bitReductionUnsigned
-
-    << SRCSAMPLESLOTHEX
-    << sampleUnsigned
-    
-    
-    // START MESSAGE WITH NRPN
-    << channelUnsigned << 0x63 << SRCSTARTMSBHEX << channelUnsigned << 0x62 << SRCSTARTLSBHEX
-    << channelUnsigned << 0x06 << startUnsignedMSB
-    << channelUnsigned << 0x26 << startUnsignedLSB
-    << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
-    
-    // LENGTH MESSAGE WITH NRPN
-    << channelUnsigned << 0x63 << SRCLENGTHMSBHEX << channelUnsigned << 0x62 << SRCLENGTHLSBHEX
-    << channelUnsigned << 0x06 << lenghtUnsignedMSB
-    << channelUnsigned << 0x26 << lengthUnsignedLSB
-    << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
-    
-    // LOOP MESSAGE WITH NRPN
-    << channelUnsigned << 0x63 << SRCLOOPMSBHEX << channelUnsigned << 0x62 << SRCLOOPLSBHEX
-    << channelUnsigned << 0x06 << loopUnsignedMSB
-    << channelUnsigned << 0x26 << loopUnsignedLSB
-    << channelUnsigned << 0x62 << 0x7F << channelUnsigned << 0x63 << 0x7F
-    
-    << channelUnsigned
-    << SRCSAMPLELEVEL
-    << sampleLevelUnsigned
-    
-    << channelUnsigned << 0x06 << 0x00
-    << channelUnsigned << 0x26 << 0x00
-    << MIDI_SYSEX_END << FinishMidi();
+    // end & send Message
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
 }
 
 //--------------------------------------------------------------
@@ -349,186 +318,179 @@ void ofxDigitaktControl::sendFLTRMessages(){
     unsigned char fltrDecayUnsigned = (unsigned char)fltrDecay << 0x00;
     unsigned char fltrSustainUnsigned = (unsigned char)fltrSustain << 0x00;
     unsigned char fltrReleaseUnsigned = (unsigned char)fltrRelease << 0x00;
-    unsigned char frequencyUnsigned = (unsigned char)frequency << 0x00;
-    unsigned char resonnanceUnsigned = (unsigned char)resonnance << 0x00;
-    unsigned char fltrTypeUnsigned = (unsigned char)fltrType << 0x00;
-    unsigned char fltrEnvelopUnsigned = (unsigned char)fltrEnvelop << 0x00;
     
+    unsigned char frequencyMSBUnsigned = (unsigned char)floor(frequency) << 0x00;
+    unsigned char frequencyLSBUnsigned = (unsigned char)((ofMap(frequency - floor(frequency), 0, 1, 0, 127))) << 0x00;
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
-    << channelUnsigned
-    
-    
-    << FLTRATTACKHEX
-    << fltrAttackUnsigned
-//
-    << FLTRDECAYHEX
-    << fltrDecayUnsigned
-    
-    << FLTRSUSTAINHEX
-    << fltrSustainUnsigned
+    unsigned char resonnanceMSBUnsigned = (unsigned char)floor(resonnance) << 0x00;
+    unsigned char resonnanceLSBUnsigned = (unsigned char)((ofMap(resonnance - floor(resonnance), 0, 1, 0, 127))) << 0x00;
 
-    << FLTRRELEASEHEX
-    << fltrReleaseUnsigned
+    unsigned char fltrTypeUnsigned = (unsigned char)fltrType << 0x00;
     
-    << FLTRRESONNANCEHEX
-    << resonnanceUnsigned
+    unsigned char fltrEnvelopMSBUnsigned = ( (unsigned char)(ofMap(floor(fltrEnvelop), -64, 63, 0, 127) )) << 0x00;
+    unsigned char fltrEnvelopLSBUnsigned = (unsigned char)((ofMap(fltrEnvelop - floor(fltrEnvelop), 0, 1, 0, 127))) << 0x00;
     
-    << FLTRTYPEHEX
-    << fltrTypeUnsigned
+    // start Message
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
     
-    << FLTRRENVDEPTHHEX
-    << fltrEnvelopUnsigned
-    << channelUnsigned << 0x06 << 0x00
-    << channelUnsigned << 0x26 << 0x00
-    << MIDI_SYSEX_END << FinishMidi();
+    //NRPN messages
+    addNRPNMessage(&midiSysExMsg, FLTRFREQMSBHEX, FLTRFREQLSBHEX, frequencyMSBUnsigned, frequencyLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, FLTRRESONNANCEMSBHEX, FLTRRESONNANCELSBHEX, resonnanceMSBUnsigned, resonnanceLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, FLTRRENVDEPTHMSBHEX, FLTRRENVDEPTHLSBHEX, fltrEnvelopMSBUnsigned, fltrEnvelopLSBUnsigned);
+    
+    // CC Messages
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(FLTRATTACKHEX);
+    midiSysExMsg.push_back(fltrAttackUnsigned);
+    midiSysExMsg.push_back(FLTRDECAYHEX);
+    midiSysExMsg.push_back(fltrDecayUnsigned);
+    midiSysExMsg.push_back(FLTRSUSTAINHEX);
+    midiSysExMsg.push_back(fltrSustainUnsigned);
+    midiSysExMsg.push_back(FLTRRELEASEHEX);
+    midiSysExMsg.push_back(fltrReleaseUnsigned);
+    midiSysExMsg.push_back(FLTRTYPEHEX);
+    midiSysExMsg.push_back(fltrTypeUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
+    
+    // end & send Message
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
 }
 
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendAMPMessages(){
 
-    unsigned char fltrAttackUnsigned = (unsigned char)(ampAttack) << 0x00;
-    unsigned char fltrDecayUnsigned = (unsigned char)ampHold << 0x00;
-    unsigned char fltrSustainUnsigned = (unsigned char)ampDecay << 0x00;
-    unsigned char fltrReleaseUnsigned = (unsigned char)ampOverdrive << 0x00;
-    unsigned char frequencyUnsigned = (unsigned char)ampDelay << 0x00;
-    unsigned char resonnanceUnsigned = (unsigned char)ampReverb << 0x00;
-    unsigned char fltrTypeUnsigned = (unsigned char)ampPan << 0x00;
-    unsigned char fltrEnvelopUnsigned = (unsigned char)ampVolume << 0x00;
+    unsigned char ampAttackUnsigned = (unsigned char)(ampAttack) << 0x00;
+    unsigned char ampHoldUnsigned = (unsigned char)ampHold << 0x00;
+    unsigned char ampDecayUnsigned = (unsigned char)ampDecay << 0x00;
+    
+    unsigned char ampOverdriveMSBUnsigned = (unsigned char) floor(ampOverdrive) << 0x00;
+    unsigned char ampOverdriveLSBUnsigned = (unsigned char)((ofMap(ampOverdrive - floor(ampOverdrive), 0, 1, 0, 127))) << 0x00;
+    
+    unsigned char ampDelayMSBUnsigned = (unsigned char) floor(ampDelay) << 0x00;
+    unsigned char ampDelayLSBUnsigned = (unsigned char) ((ofMap(ampDelay - floor(ampDelay), 0, 1, 0, 127))) << 0x00;
+    
+    unsigned char ampReverbMSBUnsigned = (unsigned char) floor(ampReverb) << 0x00;
+    unsigned char ampReverbLSBUnsigned = (unsigned char) ((ofMap(ampReverb - floor(ampReverb), 0, 1, 0, 127))) << 0x00;
+    
+    unsigned char ampPanUnsigned = (unsigned char)(ofMap(ampPan, -63, 64, 0, 127)) << 0x00;
+    
+    unsigned char ampVlmMSBUnsigned = ( (unsigned char) floor(ampVolume) ) << 0x00;
+    unsigned char ampVlmLSBUnsigned = (unsigned char)((ofMap(ampVolume - floor(ampVolume), 0, 1, 0, 127))) << 0x00;
+    
+    // start Message
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
+    
+    //NRPN messages
+    addNRPNMessage(&midiSysExMsg, AMPOVERDRIVEMSBHEX, AMPOVERDRIVELSBHEX, ampOverdriveMSBUnsigned, ampOverdriveLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, AMPDELAYMSBHEX, AMPDELAYLSBHEX, ampDelayMSBUnsigned, ampDelayLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, AMPREVERBMSBHEX, AMPREVERBLSBHEX, ampReverbMSBUnsigned, ampReverbLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, AMPVOLUMEMSBHEX, AMPVOLUMELSBHEX, ampVlmMSBUnsigned, ampVlmLSBUnsigned);
     
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
-    << channelUnsigned
+    // CC Messages
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(AMPATTACKHEX);
+    midiSysExMsg.push_back(ampAttackUnsigned);
+    midiSysExMsg.push_back(AMPHOLDHEX);
+    midiSysExMsg.push_back(ampHoldUnsigned);
+    midiSysExMsg.push_back(AMPDECAYHEX);
+    midiSysExMsg.push_back(ampHoldUnsigned);
+    midiSysExMsg.push_back(AMPPANHEX);
+    midiSysExMsg.push_back(ampPanUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
     
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
     
-    << AMPATTACKHEX
-    << fltrAttackUnsigned
-//
-    << AMPHOLDHEX
-    << fltrDecayUnsigned
-    
-    << AMPDECAYHEX
-    << fltrSustainUnsigned
-
-    << AMPOVERDRIVEHEX
-    << fltrReleaseUnsigned
-    
-    << AMPDELAYSENDHEX
-    << frequencyUnsigned
-
-    << AMPREVERBSENDHEX
-    << resonnanceUnsigned
-    
-    << AMPPANHEX
-    << fltrTypeUnsigned
-    
-    << AMPVOLUMEHEX
-    << fltrEnvelopUnsigned
-    << channelUnsigned << 0x06 << 0x00
-    << channelUnsigned << 0x26 << 0x00
-    << MIDI_SYSEX_END << FinishMidi();
 }
 
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendLFOMessages(){
 
-    unsigned char lfoSpeedUnsigned = (unsigned char)lfoSpeed << 0x00;
+    unsigned char lfoSpeedMSBUnsigned = (unsigned char) (ofMap(lfoSpeed, -64, 63, 0, 127) )  << 0x00;
+    unsigned char lfoSpeedLSBUnsigned = (unsigned char) (ofMap(lfoSpeed - floor(lfoSpeed), 0, 1, 0, 127)) << 0x00;
+    
     unsigned char lfoMultiplierUnsigned = (unsigned char)lfoMultiplier << 0x00;
     unsigned char lfoFadeInOutUnsigned = (unsigned char)lfoFadeInOut << 0x00;
     unsigned char lfoDestinationUnsigned = (unsigned char)lfoDestination << 0x00;
     unsigned char lfoWaveUnsigned = (unsigned char)lfoWave << 0x00;
     unsigned char lfoStartPhaseUnsigned = (unsigned char)lfoStartPhase << 0x00;
     unsigned char lfoModeUnsigned = (unsigned char)lfoMode << 0x00;
-    unsigned char lfoDepthUnsigned = (unsigned char)lfoDepth << 0x00;
     
+    unsigned char lfoDepthMSBUnsigned = (unsigned char) (ofMap(lfoDepth, -64, 63, 0, 127) )  << 0x00;
+    unsigned char lfoDepthLSBUnsigned = (unsigned char) (ofMap(lfoDepth - floor(lfoDepth), 0, 1, 0, 127))  << 0x00;
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
-    << channelUnsigned
+    // start Message
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
     
+    //NRPN messages
+    addNRPNMessage(&midiSysExMsg, LFOSPEEDMSBHEX, LFOSPEEDLSBHEX, lfoSpeedMSBUnsigned, lfoSpeedLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, LFODEPTHMSBHEX, LFODEPTHLSBHEX, lfoDepthMSBUnsigned, lfoDepthLSBUnsigned);
     
-    << LFOSPEEDHEX
-    << lfoSpeedUnsigned
-//
-    << LFOMULTIPLIERHEX
-    << lfoMultiplierUnsigned
+    // CC Messages
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(LFOMULTIPLIERHEX);
+    midiSysExMsg.push_back(lfoMultiplierUnsigned);
+    midiSysExMsg.push_back(LFOFADEHEX);
+    midiSysExMsg.push_back(lfoFadeInOutUnsigned);
+    midiSysExMsg.push_back(LFODESTINATIONHEX);
+    midiSysExMsg.push_back(lfoDestinationUnsigned);
+    midiSysExMsg.push_back(LFOWAVEFORMHEX);
+    midiSysExMsg.push_back(lfoWaveUnsigned);
+    midiSysExMsg.push_back(LFOSTARTPHASEHEX);
+    midiSysExMsg.push_back(lfoStartPhaseUnsigned);
+    midiSysExMsg.push_back(LFOTRIGMODEHEX);
+    midiSysExMsg.push_back(lfoModeUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
     
-    << LFOFADEHEX
-    << lfoFadeInOutUnsigned
-
-    << LFODESTINATIONHEX
-    << lfoDestinationUnsigned
-    
-    << LFOWAVEFORMHEX
-    << lfoWaveUnsigned
-
-    << LFOSTARTPHASEHEX
-    << lfoStartPhaseUnsigned
-    
-    << LFOTRIGMODEHEX
-    << lfoModeUnsigned
-    
-    << LFODEPTHHEX
-    << lfoDepthUnsigned
-    
-    << channelUnsigned << 0x06 << 0x00
-    << channelUnsigned << 0x26 << 0x00
-    << MIDI_SYSEX_END << FinishMidi();
-
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
 }
 
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendDelayMessages(){
 
-    unsigned char delayTimeUnsigned = (unsigned char)delayTime << 0x00;
+    unsigned char delayTimeMSBUnsigned = (unsigned char)floor(delayTime) << 0x00;
+    unsigned char delayTimeLSBUnsigned = (unsigned char) (ofMap(delayTime - floor(delayTime), 0, 1, 0, 127))  << 0x00;
+    
     unsigned char delayPingPongUnsigned = (unsigned char)delayPingPong << 0x00;
-    unsigned char delayStereoWidthUnsigned = (unsigned char)delayStereoWidth << 0x00;
+    
+    unsigned char delayStereoWidthMSBUnsigned = (unsigned char) (ofMap(delayStereoWidth, -64, 63, 0, 127) )  << 0x00;
+    unsigned char delayStereoWidthLSBUnsigned = (unsigned char) (ofMap(delayStereoWidth - floor(delayStereoWidth), 0, 1, 0, 127))  << 0x00;
+    
     unsigned char delayFeedbackUnsigned = (unsigned char)delayFeedback << 0x00;
-    unsigned char delayHighPassFltrUnsigned = (unsigned char)delayHighPassFltr << 0x00;
-    unsigned char delayLowPassFltrUnsigned = (unsigned char)delayLowPassFltr << 0x00;
-    unsigned char delayReverbSendUnsigned = (unsigned char)delayReverbSend << 0x00;
-    unsigned char delayMixVolumeUnsigned = (unsigned char)delayMixVolume << 0x00;
     
+    unsigned char delayHighPassFltrMSBUnsigned = (unsigned char)floor(delayHighPassFltr) << 0x00;
+    unsigned char delayHighPassFltrLSBUnsigned = (unsigned char) (ofMap(delayHighPassFltr - floor(delayHighPassFltr), 0, 1, 0, 127))  << 0x00;
+    unsigned char delayLowPassFltrMSBUnsigned = (unsigned char)floor(delayLowPassFltr) << 0x00;
+    unsigned char delayLowPassFltrLSBUnsigned = (unsigned char)(ofMap(delayLowPassFltr - floor(delayLowPassFltr), 0, 1, 0, 127)) << 0x00;
+    unsigned char delayReverbSendMSBUnsigned = (unsigned char)floor(delayReverbSend) << 0x00;
+    unsigned char delayReverbSendLSBUnsigned = (unsigned char)(ofMap(delayReverbSend - floor(delayReverbSend), 0, 1, 0, 127)) << 0x00;
+    unsigned char delayMixVolumeMSBUnsigned = (unsigned char)floor(delayMixVolume) << 0x00;
+    unsigned char delayMixVolumeLSBUnsigned = (unsigned char)(ofMap(delayMixVolume - floor(delayMixVolume), 0, 1, 0, 127)) << 0x00;
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
-    << channelUnsigned
+    // start Message
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
     
+    //NRPN messages
+    addNRPNMessage(&midiSysExMsg, DELAYDELAYTIMEMSBHEX, DELAYDELAYTIMELSBHEX, delayTimeMSBUnsigned, delayTimeLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYSTEREOWIDTHMSBHEX, DELAYSTEREOWIDTHLSBHEX, delayStereoWidthMSBUnsigned, delayStereoWidthLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYHIGHPASSFLTRMSBHEX, DELAYHIGHPASSFLTRLSBHEX, delayHighPassFltrMSBUnsigned, delayHighPassFltrLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYLOWPASSFLTRMSBHEX, DELAYLOWPASSFLTRLSBHEX, delayLowPassFltrMSBUnsigned, delayLowPassFltrLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYREVERBSENDMSBHEX, DELAYREVERBSENDLSBHEX, delayReverbSendMSBUnsigned, delayReverbSendLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYMIXVOLMSBHEX, DELAYMIXVOLLSBHEX, delayMixVolumeMSBUnsigned, delayMixVolumeLSBUnsigned);
     
-    << DELAYDELAYTIMEHEX
-    << delayTimeUnsigned
-//
-    << DELAYPINGPONGHEX
-    << delayPingPongUnsigned
+    // CC Messages
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(DELAYPINGPONGHEX);
+    midiSysExMsg.push_back(delayPingPongUnsigned);
+    midiSysExMsg.push_back(DELAYFEEDBACKHEX);
+    midiSysExMsg.push_back(delayFeedbackUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
     
-    << DELAYSTEREOWIDTHHEX
-    << delayStereoWidthUnsigned
-
-    << DELAYFEEDBACKHEX
-    << delayFeedbackUnsigned
-    
-    << DELAYHIGHPASSFLTRHEX
-    << delayHighPassFltrUnsigned
-
-    << DELAYLOWPASSFLTRHEX
-    << delayReverbSendUnsigned
-    
-    << DELAYREVERBSENDHEX
-    << delayReverbSendUnsigned
-    
-    << DELAYMIXVOLHEX
-    << delayMixVolumeUnsigned
-    
-    << channelUnsigned << 0x06 << 0x00
-    << channelUnsigned << 0x26 << 0x00
-    << MIDI_SYSEX_END << FinishMidi();
-
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
 }
 
 //--------------------------------------------------------------
@@ -630,5 +592,60 @@ void ofxDigitaktControl::sendCompressorMessages(){
     << channelUnsigned << 0x06 << 0x00
     << channelUnsigned << 0x26 << 0x00
     << MIDI_SYSEX_END << FinishMidi();
+
+}
+
+//--------------------------------------------------------------
+vector < unsigned char > ofxDigitaktControl::initMidiMessage(){
+    vector < unsigned char > sysExMsg;
+    
+    sysExMsg.push_back(MIDI_SYSEX);
+    sysExMsg.push_back(ELEKTRON_SysExIDNumber_0);
+    sysExMsg.push_back(ELEKTRON_SysExIDNumber_1);
+    sysExMsg.push_back(ELEKTRON_SysExIDNumber_2);
+    sysExMsg.push_back(0x00);
+    
+    return sysExMsg;
+}
+
+void ofxDigitaktControl::wrapMidiMessageCC(vector < unsigned char >* sysExMsg){
+    sysExMsg->push_back(channelUnsigned);
+    sysExMsg->push_back(0x06);
+    sysExMsg->push_back(0x7F);
+    sysExMsg->push_back(channelUnsigned);
+    sysExMsg->push_back(0x26);
+    sysExMsg->push_back(0x7F);
+}
+
+//--------------------------------------------------------------
+void ofxDigitaktControl::addNRPNMessage(vector < unsigned char > * sysExMsg, unsigned char addressMSB, unsigned char addressLSB, unsigned char valMSB, unsigned valLSB ){
+    
+    // MSB address
+    sysExMsg->push_back(channelUnsigned);
+    sysExMsg->push_back(0x63);
+    sysExMsg->push_back(addressMSB);
+    
+    // LSB address
+    sysExMsg->push_back(channelUnsigned);
+    sysExMsg->push_back(0x62);
+    sysExMsg->push_back(addressLSB);
+    
+    // MSB val
+    sysExMsg->push_back(channelUnsigned);
+    sysExMsg->push_back(0x06);
+    sysExMsg->push_back(valMSB);
+    
+    // LSB val
+    sysExMsg->push_back(channelUnsigned);
+    sysExMsg->push_back(0x26);
+    sysExMsg->push_back(valLSB);
+    
+    // MSB & LSB running status in effect
+    sysExMsg->push_back(channelUnsigned);
+    sysExMsg->push_back(0x63);
+    sysExMsg->push_back(0x7F);
+    sysExMsg->push_back(channelUnsigned);
+    sysExMsg->push_back(0x62);
+    sysExMsg->push_back(0x7F);
 
 }

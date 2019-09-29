@@ -99,7 +99,7 @@ class ofxDigitaktControl{
     ofParameter < float > delayTime;
     ofParameter < bool > delayPingPong;
     ofParameter < float > delayStereoWidth;
-    ofParameter < float > delayFeedback;
+    ofParameter < int > delayFeedback;
     ofParameter < float > delayHighPassFltr;
     ofParameter < float > delayLowPassFltr;
     ofParameter < float > delayReverbSend;
@@ -144,6 +144,11 @@ class ofxDigitaktControl{
     void sendDelayMessages();
     void sendReverbMessages();
     void sendCompressorMessages();
+    
+    vector < unsigned char > initMidiMessage();
+    void wrapMidiMessageCC(vector < unsigned char >* sysExMsg);
+    
+    void addNRPNMessage(vector < unsigned char > * midiMessage, unsigned char addressMSB, unsigned char addressLSB, unsigned char valMSB, unsigned valLSB );
 
 };
 

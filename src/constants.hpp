@@ -7,10 +7,21 @@
 
 #include <stdio.h>
 
+// ==== manufacturer SysEx Id Number ==== //
+
+// found here : https://www.midi.org/specifications-old/item/manufacturer-id-numbers
+
+#define ELEKTRON_SysExIDNumber_0    0x00
+#define ELEKTRON_SysExIDNumber_1    0x20
+#define ELEKTRON_SysExIDNumber_2    0x3C
+
+// ==== //
+
 // ==== CC MSB ==== //
 
 // sourced from https://www.elektron.se/wp-content/uploads/2019/06/Digitakt-User-Manual_ENG.pdf
 // page 72
+
 
 // TRACK
 #define TRACKMUTEHEX                0x5E
@@ -35,7 +46,6 @@
 #define SRCLENGTHLSBHEX             0x05
 #define SRCLOOPMSBHEX               0x01
 #define SRCLOOPLSBHEX               0x06
-
 #define SRCSAMPLELEVEL              0x17
 
 // FLTR
@@ -43,41 +53,55 @@
 #define FLTRDECAYHEX                0x47
 #define FLTRSUSTAINHEX              0x48
 #define FLTRRELEASEHEX              0x49
-#define FLTRFREQHEX                 0x4A
-#define FLTRRESONNANCEHEX           0x4B
+#define FLTRFREQMSBHEX              0x01
+#define FLTRFREQLSBHEX              0x14
+#define FLTRRESONNANCEMSBHEX        0x01
+#define FLTRRESONNANCELSBHEX        0x15
 #define FLTRTYPEHEX                 0x4C
-#define FLTRRENVDEPTHHEX            0x4D
+#define FLTRRENVDEPTHMSBHEX         0x01
+#define FLTRRENVDEPTHLSBHEX         0x17
 
 // AMP
 #define AMPATTACKHEX                0x4E
 #define AMPHOLDHEX                  0x4F
 #define AMPDECAYHEX                 0x50
-#define AMPOVERDRIVEHEX             0x51
-#define AMPDELAYSENDHEX             0x52
-#define AMPREVERBSENDHEX            0x53
+#define AMPOVERDRIVEMSBHEX          0x01
+#define AMPOVERDRIVELSBHEX          0x1B
+#define AMPDELAYMSBHEX              0x01
+#define AMPDELAYLSBHEX              0x1C
+#define AMPREVERBMSBHEX             0x01
+#define AMPREVERBLSBHEX             0x1D
 #define AMPPANHEX                   0x0A
-#define AMPVOLUMEHEX                0x07
+#define AMPVOLUMEMSBHEX             0x01
+#define AMPVOLUMELSBHEX             0x1F
 
 // LFO
-#define LFOSPEEDHEX                 0x66
+#define LFOSPEEDMSBHEX              0x01
+#define LFOSPEEDLSBHEX              0x20
 #define LFOMULTIPLIERHEX            0x67
 #define LFOFADEHEX                  0x68
 #define LFODESTINATIONHEX           0x69
 #define LFOWAVEFORMHEX              0x6A
 #define LFOSTARTPHASEHEX            0x6B
 #define LFOTRIGMODEHEX              0x6C
-#define LFODEPTHHEX                 0x6D
-#define LFODEPTHHEXLSB              0x6E
+#define LFODEPTHMSBHEX              0x01
+#define LFODEPTHLSBHEX              0x27
 
 // DELAY
-#define DELAYDELAYTIMEHEX           0x55
+#define DELAYDELAYTIMEMSBHEX        0x02
+#define DELAYDELAYTIMELSBHEX        0x00
 #define DELAYPINGPONGHEX            0x56
-#define DELAYSTEREOWIDTHHEX         0x57
+#define DELAYSTEREOWIDTHMSBHEX      0x02
+#define DELAYSTEREOWIDTHLSBHEX      0x02
 #define DELAYFEEDBACKHEX            0x58
-#define DELAYHIGHPASSFLTRHEX        0x59
-#define DELAYLOWPASSFLTRHEX         0x5A
-#define DELAYREVERBSENDHEX          0x5B
-#define DELAYMIXVOLHEX              0x5C
+#define DELAYHIGHPASSFLTRMSBHEX     0x02
+#define DELAYHIGHPASSFLTRLSBHEX     0x04
+#define DELAYLOWPASSFLTRMSBHEX      0x02
+#define DELAYLOWPASSFLTRLSBHEX      0x05
+#define DELAYREVERBSENDMSBHEX       0x02
+#define DELAYREVERBSENDLSBHEX       0x06
+#define DELAYMIXVOLMSBHEX           0x02
+#define DELAYMIXVOLLSBHEX           0x07
 
 // REVERB
 #define REVERBPREDELAYHEX           0x18
