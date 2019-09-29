@@ -99,6 +99,7 @@ void ofxDigitaktControl::setup(){
     midiReverb.add(reverbHighPassFltr.set("HighPass Fltr", 0, 0, 127));
     midiReverb.add(reverbLowPassFltr.set("LowPass Fltr", 0, 0, 127));
     midiReverb.add(reverbPrePost.set("Pre COMP / Post COMP", 0, 0, 1));
+    midiReverb.add(reverbMixVolume.set("Mix Volume", 0, 0, 127));
     midiReverb.add(midiReverbSend.set("Send REVERB", false));
 
     midiCompressor.add(compressorThreshold.set("Threshold", 0, 0, 127));
@@ -214,8 +215,8 @@ void ofxDigitaktControl::listenToChannel(int& channel){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendTrackMessages(){
 
-    unsigned char trackMuteUnsigned = (unsigned char)trackMute << 0x00;
-    unsigned char trackLevelUnsigned = (unsigned char)(trackLevel) << 0x00;
+    unsigned char trackMuteUnsigned =  (unsigned char)trackMute << 0x00;
+    unsigned char trackLevelUnsigned = (unsigned char)trackLevel << 0x00;
     
     vector < unsigned char > midiSysExMsg = initMidiMessage();
     
@@ -234,6 +235,7 @@ void ofxDigitaktControl::sendTrackMessages(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendTRIGMessages(){
 
+    // trig note not wuite right :/
     unsigned char trigNoteUnsigned = (unsigned char)(ofMap(trigNote, -24, 24, 34, 84)) << 0x00;
     unsigned char trigVelocityUnsigned = (unsigned char)trigVelocity << 0x00;
     unsigned char trigLengthUnsigned = (unsigned char)trigLength << 0x00;
@@ -266,8 +268,8 @@ void ofxDigitaktControl::sendTRIGMessages(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendSRCMessages(){
     
-    unsigned char tuneUnsignedMSB = (unsigned char)((ofMap(floor(srcTune), -24, 24, 41, 88))) << 0x00;
-    unsigned char tuneUnsignedLSB = (unsigned char)((ofMap(srcTune - floor(srcTune), 0, 1, 0, 127))) << 0x00;
+    unsigned char tuneUnsignedMSB = (unsigned char)(ofMap(floor(srcTune), -24, 24, 41, 88)) << 0x00;
+    unsigned char tuneUnsignedLSB = (unsigned char)(ofMap(srcTune - floor(srcTune), 0, 1, 0, 127)) << 0x00;
     
     unsigned char playModeUnsigned = (unsigned char)(srcPlayMode) << 0x00;
     unsigned char bitReductionUnsigned = (unsigned char)srcBitReduction << 0x00;
@@ -314,21 +316,21 @@ void ofxDigitaktControl::sendSRCMessages(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendFLTRMessages(){
     
-    unsigned char fltrAttackUnsigned = (unsigned char)(fltrAttack) << 0x00;
+    unsigned char fltrAttackUnsigned = (unsigned char)fltrAttack << 0x00;
     unsigned char fltrDecayUnsigned = (unsigned char)fltrDecay << 0x00;
     unsigned char fltrSustainUnsigned = (unsigned char)fltrSustain << 0x00;
     unsigned char fltrReleaseUnsigned = (unsigned char)fltrRelease << 0x00;
     
     unsigned char frequencyMSBUnsigned = (unsigned char)floor(frequency) << 0x00;
-    unsigned char frequencyLSBUnsigned = (unsigned char)((ofMap(frequency - floor(frequency), 0, 1, 0, 127))) << 0x00;
+    unsigned char frequencyLSBUnsigned = (unsigned char)(ofMap(frequency - floor(frequency), 0, 1, 0, 127)) << 0x00;
     
     unsigned char resonnanceMSBUnsigned = (unsigned char)floor(resonnance) << 0x00;
-    unsigned char resonnanceLSBUnsigned = (unsigned char)((ofMap(resonnance - floor(resonnance), 0, 1, 0, 127))) << 0x00;
+    unsigned char resonnanceLSBUnsigned = (unsigned char)(ofMap(resonnance - floor(resonnance), 0, 1, 0, 127)) << 0x00;
 
     unsigned char fltrTypeUnsigned = (unsigned char)fltrType << 0x00;
     
     unsigned char fltrEnvelopMSBUnsigned = ( (unsigned char)(ofMap(floor(fltrEnvelop), -64, 63, 0, 127) )) << 0x00;
-    unsigned char fltrEnvelopLSBUnsigned = (unsigned char)((ofMap(fltrEnvelop - floor(fltrEnvelop), 0, 1, 0, 127))) << 0x00;
+    unsigned char fltrEnvelopLSBUnsigned = (unsigned char)(ofMap(fltrEnvelop - floor(fltrEnvelop), 0, 1, 0, 127)) << 0x00;
     
     // start Message
     vector < unsigned char > midiSysExMsg = initMidiMessage();
@@ -365,18 +367,18 @@ void ofxDigitaktControl::sendAMPMessages(){
     unsigned char ampDecayUnsigned = (unsigned char)ampDecay << 0x00;
     
     unsigned char ampOverdriveMSBUnsigned = (unsigned char) floor(ampOverdrive) << 0x00;
-    unsigned char ampOverdriveLSBUnsigned = (unsigned char)((ofMap(ampOverdrive - floor(ampOverdrive), 0, 1, 0, 127))) << 0x00;
+    unsigned char ampOverdriveLSBUnsigned = (unsigned char)(ofMap(ampOverdrive - floor(ampOverdrive), 0, 1, 0, 127)) << 0x00;
     
     unsigned char ampDelayMSBUnsigned = (unsigned char) floor(ampDelay) << 0x00;
-    unsigned char ampDelayLSBUnsigned = (unsigned char) ((ofMap(ampDelay - floor(ampDelay), 0, 1, 0, 127))) << 0x00;
+    unsigned char ampDelayLSBUnsigned = (unsigned char) (ofMap(ampDelay - floor(ampDelay), 0, 1, 0, 127)) << 0x00;
     
     unsigned char ampReverbMSBUnsigned = (unsigned char) floor(ampReverb) << 0x00;
-    unsigned char ampReverbLSBUnsigned = (unsigned char) ((ofMap(ampReverb - floor(ampReverb), 0, 1, 0, 127))) << 0x00;
+    unsigned char ampReverbLSBUnsigned = (unsigned char) (ofMap(ampReverb - floor(ampReverb), 0, 1, 0, 127)) << 0x00;
     
     unsigned char ampPanUnsigned = (unsigned char)(ofMap(ampPan, -63, 64, 0, 127)) << 0x00;
     
     unsigned char ampVlmMSBUnsigned = ( (unsigned char) floor(ampVolume) ) << 0x00;
-    unsigned char ampVlmLSBUnsigned = (unsigned char)((ofMap(ampVolume - floor(ampVolume), 0, 1, 0, 127))) << 0x00;
+    unsigned char ampVlmLSBUnsigned = (unsigned char) (ofMap(ampVolume - floor(ampVolume), 0, 1, 0, 127)) << 0x00;
     
     // start Message
     vector < unsigned char > midiSysExMsg = initMidiMessage();
@@ -451,7 +453,7 @@ void ofxDigitaktControl::sendLFOMessages(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendDelayMessages(){
 
-    unsigned char delayTimeMSBUnsigned = (unsigned char)floor(delayTime) << 0x00;
+    unsigned char delayTimeMSBUnsigned = (unsigned char) floor(delayTime) << 0x00;
     unsigned char delayTimeLSBUnsigned = (unsigned char) (ofMap(delayTime - floor(delayTime), 0, 1, 0, 127))  << 0x00;
     
     unsigned char delayPingPongUnsigned = (unsigned char)delayPingPong << 0x00;
@@ -461,25 +463,25 @@ void ofxDigitaktControl::sendDelayMessages(){
     
     unsigned char delayFeedbackUnsigned = (unsigned char)delayFeedback << 0x00;
     
-    unsigned char delayHighPassFltrMSBUnsigned = (unsigned char)floor(delayHighPassFltr) << 0x00;
-    unsigned char delayHighPassFltrLSBUnsigned = (unsigned char) (ofMap(delayHighPassFltr - floor(delayHighPassFltr), 0, 1, 0, 127))  << 0x00;
-    unsigned char delayLowPassFltrMSBUnsigned = (unsigned char)floor(delayLowPassFltr) << 0x00;
-    unsigned char delayLowPassFltrLSBUnsigned = (unsigned char)(ofMap(delayLowPassFltr - floor(delayLowPassFltr), 0, 1, 0, 127)) << 0x00;
-    unsigned char delayReverbSendMSBUnsigned = (unsigned char)floor(delayReverbSend) << 0x00;
-    unsigned char delayReverbSendLSBUnsigned = (unsigned char)(ofMap(delayReverbSend - floor(delayReverbSend), 0, 1, 0, 127)) << 0x00;
-    unsigned char delayMixVolumeMSBUnsigned = (unsigned char)floor(delayMixVolume) << 0x00;
-    unsigned char delayMixVolumeLSBUnsigned = (unsigned char)(ofMap(delayMixVolume - floor(delayMixVolume), 0, 1, 0, 127)) << 0x00;
+    unsigned char delayHighPassFltrMSBUnsigned  = (unsigned char) floor(delayHighPassFltr) << 0x00;
+    unsigned char delayHighPassFltrLSBUnsigned  = (unsigned char) (ofMap(delayHighPassFltr - floor(delayHighPassFltr), 0, 1, 0, 127))  << 0x00;
+    unsigned char delayLowPassFltrMSBUnsigned   = (unsigned char) floor(delayLowPassFltr) << 0x00;
+    unsigned char delayLowPassFltrLSBUnsigned   = (unsigned char) (ofMap(delayLowPassFltr - floor(delayLowPassFltr), 0, 1, 0, 127)) << 0x00;
+    unsigned char delayReverbSendMSBUnsigned    = (unsigned char) floor(delayReverbSend) << 0x00;
+    unsigned char delayReverbSendLSBUnsigned    = (unsigned char) (ofMap(delayReverbSend - floor(delayReverbSend), 0, 1, 0, 127)) << 0x00;
+    unsigned char delayMixVolumeMSBUnsigned     = (unsigned char) floor(delayMixVolume) << 0x00;
+    unsigned char delayMixVolumeLSBUnsigned     = (unsigned char) (ofMap(delayMixVolume - floor(delayMixVolume), 0, 1, 0, 127)) << 0x00;
     
     // start Message
     vector < unsigned char > midiSysExMsg = initMidiMessage();
     
     //NRPN messages
-    addNRPNMessage(&midiSysExMsg, DELAYDELAYTIMEMSBHEX, DELAYDELAYTIMELSBHEX, delayTimeMSBUnsigned, delayTimeLSBUnsigned);
-    addNRPNMessage(&midiSysExMsg, DELAYSTEREOWIDTHMSBHEX, DELAYSTEREOWIDTHLSBHEX, delayStereoWidthMSBUnsigned, delayStereoWidthLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYDELAYTIMEMSBHEX, DELAYDELAYTIMELSBHEX,       delayTimeMSBUnsigned, delayTimeLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYSTEREOWIDTHMSBHEX, DELAYSTEREOWIDTHLSBHEX,   delayStereoWidthMSBUnsigned, delayStereoWidthLSBUnsigned);
     addNRPNMessage(&midiSysExMsg, DELAYHIGHPASSFLTRMSBHEX, DELAYHIGHPASSFLTRLSBHEX, delayHighPassFltrMSBUnsigned, delayHighPassFltrLSBUnsigned);
-    addNRPNMessage(&midiSysExMsg, DELAYLOWPASSFLTRMSBHEX, DELAYLOWPASSFLTRLSBHEX, delayLowPassFltrMSBUnsigned, delayLowPassFltrLSBUnsigned);
-    addNRPNMessage(&midiSysExMsg, DELAYREVERBSENDMSBHEX, DELAYREVERBSENDLSBHEX, delayReverbSendMSBUnsigned, delayReverbSendLSBUnsigned);
-    addNRPNMessage(&midiSysExMsg, DELAYMIXVOLMSBHEX, DELAYMIXVOLLSBHEX, delayMixVolumeMSBUnsigned, delayMixVolumeLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYLOWPASSFLTRMSBHEX, DELAYLOWPASSFLTRLSBHEX,   delayLowPassFltrMSBUnsigned, delayLowPassFltrLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYREVERBSENDMSBHEX, DELAYREVERBSENDLSBHEX,     delayReverbSendMSBUnsigned, delayReverbSendLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, DELAYMIXVOLMSBHEX, DELAYMIXVOLLSBHEX,             delayMixVolumeMSBUnsigned, delayMixVolumeLSBUnsigned);
     
     // CC Messages
     midiSysExMsg.push_back(channelUnsigned);
@@ -496,50 +498,48 @@ void ofxDigitaktControl::sendDelayMessages(){
 //--------------------------------------------------------------
 void ofxDigitaktControl::sendReverbMessages(){
 
-    unsigned char reverbPreDelayUnsigned = (unsigned char)reverbPreDelay << 0x00;
+    unsigned char reverbPreDelayMSBUnsigned = (unsigned char) floor(reverbPreDelay) << 0x00;
+    unsigned char reverbPreDelayLSBUnsigned = (unsigned char) (ofMap(reverbPreDelay - floor(reverbPreDelay), 0, 1, 0, 127))  << 0x00;
+    
     unsigned char reverbDecayTimeUnsigned = (unsigned char)reverbDecayTime << 0x00;
-    unsigned char reverbShelvingFreqUnsigned = (unsigned char)reverbShelvingFreq << 0x00;
-    unsigned char reverbShelvingGainUnsigned = (unsigned char)reverbShelvingGain << 0x00;
-    unsigned char reverbHighPassFltrUnsigned = (unsigned char)reverbHighPassFltr << 0x00;
+    
+    unsigned char reverbShelvingFreqMSBUnsigned = (unsigned char) floor(reverbShelvingFreq) << 0x00;
+    unsigned char reverbShelvingFreqLSBUnsigned = (unsigned char) (ofMap(reverbShelvingFreq - floor(reverbShelvingFreq), 0, 1, 0, 127))  << 0x00;
+    unsigned char reverbShelvingGainMSBUnsigned = (unsigned char) floor(reverbShelvingGain) << 0x00;
+    unsigned char reverbShelvingGainLSBUnsigned = (unsigned char) (ofMap(reverbShelvingGain - floor(reverbShelvingGain), 0, 1, 0, 127))  << 0x00;
+    unsigned char reverbHighPassFltrMSBUnsigned = (unsigned char) floor(reverbHighPassFltr) << 0x00;
+    unsigned char reverbHighPassFltrLSBUnsigned = (unsigned char) (ofMap(reverbHighPassFltr - floor(reverbHighPassFltr), 0, 1, 0, 127))  << 0x00;
+    unsigned char reverbLowPassFltrMSBUnsigned = (unsigned char) floor(reverbLowPassFltr) << 0x00;
+    unsigned char reverbLowPassFltrLSBUnsigned = (unsigned char) (ofMap(reverbLowPassFltr - floor(reverbLowPassFltr), 0, 1, 0, 127))  << 0x00;
+    
     unsigned char reverbLowPassFltrUnsigned = (unsigned char)reverbLowPassFltr << 0x00;
     unsigned char reverbPrePostUnsigned = (unsigned char)reverbPrePost << 0x00;
-    unsigned char reverbMixVolumeUnsigned = (unsigned char)reverbMixVolume << 0x00;
+    
+    unsigned char reverbMixVolumeMSBUnsigned = (unsigned char) floor(reverbMixVolume) << 0x00;
+    unsigned char reverbMixVolumeLSBUnsigned = (unsigned char) (ofMap(reverbMixVolume - floor(reverbMixVolume), 0, 1, 0, 127))  << 0x00;
+    
+    // start Message
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
+    
+    //NRPN messages
+    addNRPNMessage(&midiSysExMsg, REVERBPREDELAYMSBHEX, REVERBPREDELAYLSBHEX,           reverbPreDelayMSBUnsigned, reverbPreDelayLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, REVERBSHLVFREQMSBHEX, REVERBSHLVFREQLSBHEX,           reverbShelvingFreqMSBUnsigned, reverbShelvingFreqLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, REVERBSHLVGAINMSBHEX, REVERBSHLVGAINLSBHEX,           reverbShelvingGainMSBUnsigned, reverbShelvingGainMSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, REVERBHIGHPASSFLTRMSBHEX, REVERBHIGHPASSFLTRLSBHEX,   reverbHighPassFltrMSBUnsigned, reverbHighPassFltrLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, REVERLOWPASSFLTRMSBHEX, REVERLOWPASSFLTRLSBHEX,       reverbLowPassFltrMSBUnsigned, reverbLowPassFltrLSBUnsigned);
+    addNRPNMessage(&midiSysExMsg, REVERBMIXVOLUMEMSBHEX, REVERBMIXVOLUMELSBHEX,         reverbMixVolumeMSBUnsigned, reverbMixVolumeLSBUnsigned);
     
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
-    << channelUnsigned
+    // CC Messages
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(REVERBDECAYHEX);
+    midiSysExMsg.push_back(reverbDecayTimeUnsigned);
+    midiSysExMsg.push_back(REVERBPREPOSTCOMPHEX);
+    midiSysExMsg.push_back(reverbPrePostUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
     
-    
-    << REVERBPREDELAYHEX
-    << reverbPreDelayUnsigned
-//
-    << REVERBDECAYHEX
-    << reverbDecayTimeUnsigned
-    
-    << REVERBSHLVFREQHEX
-    << reverbShelvingFreqUnsigned
-
-    << REVERBSHLVGAINHEX
-    << reverbShelvingGainUnsigned
-    
-    << REVERBHIGHPASSFLTRHEX
-    << reverbHighPassFltrUnsigned
-
-    << REVERLOWPASSFLTRHEX
-    << reverbLowPassFltrUnsigned
-    
-    << REVERBPREPOSTCOMPHEX
-    << reverbPrePostUnsigned
-    
-    << REVERBMIXVOLUMEHEX
-    << reverbMixVolumeUnsigned
-    
-    << channelUnsigned << 0x06 << 0x00
-    << channelUnsigned << 0x26 << 0x00
-    << MIDI_SYSEX_END << FinishMidi();
-
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
 }
 
 //--------------------------------------------------------------
@@ -548,51 +548,45 @@ void ofxDigitaktControl::sendCompressorMessages(){
     unsigned char compressorThresholdUnsigned = (unsigned char)compressorThreshold << 0x00;
     unsigned char compressorAttackUnsigned = (unsigned char)compressorAttack << 0x00;
     unsigned char compressorReleaseUnsigned = (unsigned char)compressorRelease << 0x00;
-    unsigned char compressorMakeUpGainUnsigned = (unsigned char)compressorMakeUpGain << 0x00;
+    
+    unsigned char compressorMakeUpGainMSBUnsigned = (unsigned char) (ofMap(compressorMakeUpGain, 0, 24, 0, 127) )  << 0x00;
+    unsigned char compressorMakeUpGainLSBUnsigned = (unsigned char) (ofMap(compressorMakeUpGain - floor(compressorMakeUpGain), 0, 1, 0, 127))  << 0x00;
+    
     unsigned char compressorPatternVolumeUnsigned = (unsigned char)compressorPatternVolume << 0x00;
     unsigned char compressorRatioUnsigned = (unsigned char)compressorRatio << 0x00;
     unsigned char compressorSideChainSourceUnsigned = (unsigned char)compressorSideChainSource << 0x00;
-    unsigned char compressorSideChainFltrUnsigned = (unsigned char)compressorSideChainFltr << 0x00;
+    unsigned char compressorSideChainFltrUnsigned = (unsigned char)ofMap(compressorSideChainFltr, -64, 63, 0, 127) << 0x00;
     unsigned char compressorDryWetMixUnsigned = (unsigned char)compressorDryWetMix << 0x00;
     
+    // start Message
+    vector < unsigned char > midiSysExMsg = initMidiMessage();
     
-    midiOut << StartMidi() << MIDI_SYSEX
-    << 0x00 << 0x20 << 0x3C
-    << 0x00
-    << channelUnsigned
+    //NRPN messages
+    addNRPNMessage(&midiSysExMsg, COMPRESSORMKUPGAINMSBHEX, COMPRESSORMKUPGAINLSBHEX, compressorMakeUpGainMSBUnsigned, compressorMakeUpGainLSBUnsigned);
+        
+    // CC Messages
+    midiSysExMsg.push_back(channelUnsigned);
+    midiSysExMsg.push_back(COMPRESSORTHRSHLDHEX);
+    midiSysExMsg.push_back(compressorThresholdUnsigned);
+    midiSysExMsg.push_back(COMPRESSORATTACKHEX);
+    midiSysExMsg.push_back(compressorAttackUnsigned);
+    midiSysExMsg.push_back(COMPRESSORRELEASEHEX);
+    midiSysExMsg.push_back(compressorReleaseUnsigned);
+    midiSysExMsg.push_back(COMPRESSORPTTRNVOLHEX);
+    midiSysExMsg.push_back(compressorPatternVolumeUnsigned);
+    midiSysExMsg.push_back(COMPRESSORRATIOHEX);
+    midiSysExMsg.push_back(compressorRatioUnsigned);
+    midiSysExMsg.push_back(COMPRESSORSIDECHNSRCHEX);
+    midiSysExMsg.push_back(compressorSideChainSourceUnsigned);
+    midiSysExMsg.push_back(COMPRESSORSIDECHNFLTRHEX);
+    midiSysExMsg.push_back(compressorSideChainFltrUnsigned);
+    midiSysExMsg.push_back(COMPRESSORDRYWETMIXHEX);
+    midiSysExMsg.push_back(compressorDryWetMixUnsigned);
+    wrapMidiMessageCC(&midiSysExMsg);
     
+    midiSysExMsg.push_back(MIDI_SYSEX_END);
+    midiOut.sendMidiBytes(midiSysExMsg);
     
-    << COMPRESSORTHRSHLDHEX
-    << compressorThresholdUnsigned
-//
-    << COMPRESSORATTACKHEX
-    << compressorAttackUnsigned
-    
-    << COMPRESSORRELEASEHEX
-    << compressorReleaseUnsigned
-
-    << COMPRESSORMKUPGAINHEX
-    << compressorMakeUpGainUnsigned
-    
-    << COMPRESSORPTTRNVOLHEX
-    << compressorPatternVolumeUnsigned
-
-    << COMPRESSORRATIOHEX
-    << compressorRatioUnsigned
-    
-    << COMPRESSORSIDECHNSRCHEX
-    << compressorSideChainSourceUnsigned
-    
-    << COMPRESSORSIDECHNFLTRHEX
-    << compressorSideChainFltrUnsigned
-    
-    << COMPRESSORDRYWETMIXHEX
-    << compressorDryWetMixUnsigned
-    
-    << channelUnsigned << 0x06 << 0x00
-    << channelUnsigned << 0x26 << 0x00
-    << MIDI_SYSEX_END << FinishMidi();
-
 }
 
 //--------------------------------------------------------------
@@ -603,6 +597,7 @@ vector < unsigned char > ofxDigitaktControl::initMidiMessage(){
     sysExMsg.push_back(ELEKTRON_SysExIDNumber_0);
     sysExMsg.push_back(ELEKTRON_SysExIDNumber_1);
     sysExMsg.push_back(ELEKTRON_SysExIDNumber_2);
+    // talk to all machines from Elektron using 0x00
     sysExMsg.push_back(0x00);
     
     return sysExMsg;
@@ -610,10 +605,10 @@ vector < unsigned char > ofxDigitaktControl::initMidiMessage(){
 
 void ofxDigitaktControl::wrapMidiMessageCC(vector < unsigned char >* sysExMsg){
     sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(0x06);
+    sysExMsg->push_back(CCMSBVALUE);
     sysExMsg->push_back(0x7F);
     sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(0x26);
+    sysExMsg->push_back(CCLSBVALUE);
     sysExMsg->push_back(0x7F);
 }
 
@@ -622,30 +617,30 @@ void ofxDigitaktControl::addNRPNMessage(vector < unsigned char > * sysExMsg, uns
     
     // MSB address
     sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(0x63);
+    sysExMsg->push_back(CCMSBADRESS);
     sysExMsg->push_back(addressMSB);
     
     // LSB address
     sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(0x62);
+    sysExMsg->push_back(CCLSBADRESS);
     sysExMsg->push_back(addressLSB);
     
     // MSB val
     sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(0x06);
+    sysExMsg->push_back(CCMSBVALUE);
     sysExMsg->push_back(valMSB);
     
     // LSB val
     sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(0x26);
+    sysExMsg->push_back(CCLSBVALUE);
     sysExMsg->push_back(valLSB);
     
     // MSB & LSB running status in effect
     sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(0x63);
+    sysExMsg->push_back(CCMSBADRESS);
     sysExMsg->push_back(0x7F);
     sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(0x62);
+    sysExMsg->push_back(CCLSBADRESS);
     sysExMsg->push_back(0x7F);
 
 }

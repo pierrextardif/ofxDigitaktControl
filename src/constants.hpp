@@ -17,7 +17,15 @@
 
 // ==== //
 
-// ==== CC MSB ==== //
+// ==== CC Registers Adresses access ==== //
+
+#define CCMSBADRESS       0x63
+#define CCLSBADRESS       0x62
+
+// ==== CC Registers Valuea access ==== //
+
+#define CCMSBVALUE       0x06
+#define CCLSBVALUE       0x26
 
 // sourced from https://www.elektron.se/wp-content/uploads/2019/06/Digitakt-User-Manual_ENG.pdf
 // page 72
@@ -104,25 +112,34 @@
 #define DELAYMIXVOLLSBHEX           0x07
 
 // REVERB
-#define REVERBPREDELAYHEX           0x18
+#define REVERBPREDELAYMSBHEX        0x02
+#define REVERBPREDELAYLSBHEX        0x08
 #define REVERBDECAYHEX              0x19
-#define REVERBSHLVFREQHEX           0x1A
-#define REVERBSHLVGAINHEX           0x1B
-#define REVERBHIGHPASSFLTRHEX       0x1C
-#define REVERLOWPASSFLTRHEX         0x1D
+#define REVERBSHLVFREQMSBHEX        0x02
+#define REVERBSHLVFREQLSBHEX        0x0A
+#define REVERBSHLVGAINMSBHEX        0x02
+#define REVERBSHLVGAINLSBHEX        0x0B
+#define REVERBHIGHPASSFLTRMSBHEX    0x02
+#define REVERBHIGHPASSFLTRLSBHEX    0x0C
+#define REVERLOWPASSFLTRMSBHEX      0x02
+#define REVERLOWPASSFLTRLSBHEX      0x0D
 #define REVERBPREPOSTCOMPHEX        0x1E
-#define REVERBMIXVOLUMEHEX          0x1F
+#define REVERBMIXVOLUMEMSBHEX       0x02
+#define REVERBMIXVOLUMELSBHEX       0x0F
 
 // COMPRESSOR
 #define COMPRESSORTHRSHLDHEX        0x6F
 #define COMPRESSORATTACKHEX         0x70
 #define COMPRESSORRELEASEHEX        0x71
-#define COMPRESSORMKUPGAINHEX       0x72
+#define COMPRESSORMKUPGAINMSBHEX    0x02
+#define COMPRESSORMKUPGAINLSBHEX    0x13
 #define COMPRESSORPTTRNVOLHEX       0x77
 #define COMPRESSORRATIOHEX          0x73
 #define COMPRESSORSIDECHNSRCHEX     0x74
 #define COMPRESSORSIDECHNFLTRHEX    0x75
 #define COMPRESSORDRYWETMIXHEX      0x76
+
+// ==== //
 
 // DEV
 #define PRINT 1
@@ -142,5 +159,3 @@ inline HexCharStruct hex(unsigned char _c)
 {
   return HexCharStruct(_c);
 }
-
-// ==== ==== //

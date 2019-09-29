@@ -120,13 +120,13 @@ class ofxDigitaktControl{
     ofParameterGroup midiCompressor;
     ofParameter < int > compressorThreshold;
     ofParameter < int > compressorAttack;
-    ofParameter < float > compressorRelease;
+    ofParameter < int > compressorRelease;
     ofParameter < float > compressorMakeUpGain;
-    ofParameter < float > compressorPatternVolume;
+    ofParameter < int > compressorPatternVolume;
     ofParameter < int > compressorRatio;
     ofParameter < int > compressorSideChainSource;
     ofParameter < int > compressorSideChainFltr;
-    ofParameter < float > compressorDryWetMix;
+    ofParameter < int > compressorDryWetMix;
     ofParameter < bool > midiCompressorSend;
     
     // channel
