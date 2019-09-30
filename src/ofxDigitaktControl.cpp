@@ -397,7 +397,7 @@ void ofxDigitaktControl::sendAMPMessages(){
     midiSysExMsg.push_back(AMPHOLDHEX);
     midiSysExMsg.push_back(ampHoldUnsigned);
     midiSysExMsg.push_back(AMPDECAYHEX);
-    midiSysExMsg.push_back(ampHoldUnsigned);
+    midiSysExMsg.push_back(ampDecayUnsigned);
     midiSysExMsg.push_back(AMPPANHEX);
     midiSysExMsg.push_back(ampPanUnsigned);
     wrapMidiMessageCC(&midiSysExMsg);
