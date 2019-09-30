@@ -11,6 +11,8 @@ void ofxDigitaktControl::setup(){
     midiOut.listOutPorts();
     // connect
     midiOut.openPort(0); // by number
+    
+    guiON = true;
 
     mainGui.setup("mainParams");
     trackTrigGUI.setup("Track & Trigger");
@@ -188,11 +190,13 @@ void ofxDigitaktControl::update(){
 
 //--------------------------------------------------------------
 void ofxDigitaktControl::draw(){
-    mainGui.draw();
-    trackTrigGUI.draw();
-    srcFltrGUI.draw();
-    ampLfoGUI.draw();
-    effectsGUI.draw();
+    if(guiON){
+        mainGui.draw();
+        trackTrigGUI.draw();
+        srcFltrGUI.draw();
+        ampLfoGUI.draw();
+        effectsGUI.draw();
+    }
 }
 
 //--------------------------------------------------------------

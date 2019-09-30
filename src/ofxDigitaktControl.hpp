@@ -37,7 +37,7 @@ class ofxDigitaktControl{
     
     bool guiON;
     ofParameter < int > channelGUI;
-    
+    	
     ofParameterGroup midiTrack;
     ofParameter < bool > trackMute;
     ofParameter < int > trackLevel;
