@@ -15,9 +15,9 @@ void ofxDigitaktControl::setup(){
     guiON = true;
 
     mainGui.setup("mainParams");
-    trackTrigGUI.setup("Track & Trigger");
-    srcFltrGUI.setup("Source & Filter");
-    ampLfoGUI.setup("Amp & Lfo");
+    trackTrigGUI.setup("Track_Trigger");
+    srcFltrGUI.setup("Source_Filter");
+    ampLfoGUI.setup("Amp_Lfo");
     effectsGUI.setup("Effects");
 
     midiTrack.setName("TRACK");
