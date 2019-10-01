@@ -638,13 +638,5 @@ void ofxDigitaktControl::addNRPNMessage(vector < unsigned char > * sysExMsg, uns
     sysExMsg->push_back(channelUnsigned);
     sysExMsg->push_back(CCLSBVALUE);
     sysExMsg->push_back(valLSB);
-    
-    // MSB & LSB running status in effect
-    sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(CCMSBADRESS);
-    sysExMsg->push_back(0x7F);
-    sysExMsg->push_back(channelUnsigned);
-    sysExMsg->push_back(CCLSBADRESS);
-    sysExMsg->push_back(0x7F);
 
 }
