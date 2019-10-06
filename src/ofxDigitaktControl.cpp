@@ -12,132 +12,138 @@ void ofxDigitaktControl::setup(){
     // connect
     midiOut.openPort(0); // by number
     
+    setupGUI();
+}
+
+//----------------------------	----------------------------------
+void ofxDigitaktControl::setupGUI(){
     guiON = true;
 
-    mainGui.setup("mainParams");
-    trackTrigGUI.setup("Track_Trigger");
-    srcFltrGUI.setup("Source_Filter");
-    ampLfoGUI.setup("Amp_Lfo");
-    effectsGUI.setup("Effects");
+   mainGui.setup("mainParams");
+   trackTrigGUI.setup("Track_Trigger");
+   srcFltrGUI.setup("Source_Filter");
+   ampLfoGUI.setup("Amp_Lfo");
+   effectsGUI.setup("Effects");
 
-    midiTrack.setName("TRACK");
-    midiTrig.setName("TRIG");
-    midiSrc.setName("SRC");
-    midiFLTR.setName("FLTR");
-    midiAMP.setName("AMP");
-    midiLFO.setName("LFO");
-    midiDelay.setName("DELAY");
-    midiReverb.setName("REVERB");
-    midiCompressor.setName("COMPRESSOR");
+   midiTrack.setName("TRACK");
+   midiTrig.setName("TRIG");
+   midiSrc.setName("SRC");
+   midiFLTR.setName("FLTR");
+   midiAMP.setName("AMP");
+   midiLFO.setName("LFO");
+   midiDelay.setName("DELAY");
+   midiReverb.setName("REVERB");
+   midiCompressor.setName("COMPRESSOR");
 
-    mainGui.add(channelGUI.set("channel", 1, 1, 8));
+   mainGui.add(channelGUI.set("channel", 1, 1, 8));
 
-    midiTrack.add(trackMute.set("Mute", false));
-    midiTrack.add(trackLevel.set("Level",50, 0, 127));
-    midiTrack.add(midiTrackSend.set("Send TRACK", false));
+   midiTrack.add(trackMute.set("Mute", false));
+   midiTrack.add(trackLevel.set("Level",50, 0, 127));
+   midiTrack.add(midiTrackSend.set("Send TRACK", false));
 
-    midiTrig.add(trigNote.set("Note", 0, -24, 24));
-    midiTrig.add(trigVelocity.set("Velocity", 60, 0, 127));
-    midiTrig.add(trigLength.set("Length", 63, 0, 127));
-    midiTrig.add(trigFilterTrig.set("Filter Trig", false));
-    midiTrig.add(trigLFOTrig.set("LFO Trig", false));
-    midiTrig.add(midiTrigSend.set("Send TRIG", false));
+   midiTrig.add(trigNote.set("Note", 0, -24, 24));
+   midiTrig.add(trigVelocity.set("Velocity", 60, 0, 127));
+   midiTrig.add(trigLength.set("Length", 63, 0, 127));
+   midiTrig.add(trigFilterTrig.set("Filter Trig", false));
+   midiTrig.add(trigLFOTrig.set("LFO Trig", false));
+   midiTrig.add(midiTrigSend.set("Send TRIG", false));
 
-    midiSrc.add(srcTune.set("Tune", 0, -24, 24));
-    midiSrc.add(srcPlayMode.set("PlayMode", 3, 0, 3));
-    midiSrc.add(srcBitReduction.set("BitReduction", 0, 0, 127));
-    midiSrc.add(srcSampleSlot.set("Sample Slot", 0, 0, 127));
-    midiSrc.add(srcStart.set("Start", 0, 0, 120));
-    midiSrc.add(srcFinish.set("Finish", 0, 0, 120));
-    midiSrc.add(srcLoop.set("Loop", 0, 0, 120));
-    midiSrc.add(srcSampleLevel.set("Level", 127, 0, 127));
-    midiSrc.add(midiSrcSend.set("Send SRC", false));
+   midiSrc.add(srcTune.set("Tune", 0, -24, 24));
+   midiSrc.add(srcPlayMode.set("PlayMode", 3, 0, 3));
+   midiSrc.add(srcBitReduction.set("BitReduction", 0, 0, 127));
+   midiSrc.add(srcSampleSlot.set("Sample Slot", 0, 0, 127));
+   midiSrc.add(srcStart.set("Start", 0, 0, 120));
+   midiSrc.add(srcFinish.set("Finish", 0, 0, 120));
+   midiSrc.add(srcLoop.set("Loop", 0, 0, 120));
+   midiSrc.add(srcSampleLevel.set("Level", 127, 0, 127));
+   midiSrc.add(midiSrcSend.set("Send SRC", false));
 
-    midiFLTR.add(fltrAttack.set("Attack", 0, 0, 127));
-    midiFLTR.add(fltrDecay.set("Decay", 0, 0, 127));
-    midiFLTR.add(fltrSustain.set("Sustain", 0, 0, 127));
-    midiFLTR.add(fltrRelease.set("Release", 0, 0, 127));
-    midiFLTR.add(frequency.set("Frequency", 0, 0, 127));
-    midiFLTR.add(resonnance.set("Resonnance", 0, 0, 127));
-    midiFLTR.add(fltrType.set("FltrType", 0, 0, 2));
-    midiFLTR.add(fltrEnvelop.set("FltrEnvelop", 0, -64, 63));
-    midiFLTR.add(midiFltrSend.set("Send FLTR", false));
+   midiFLTR.add(fltrAttack.set("Attack", 0, 0, 127));
+   midiFLTR.add(fltrDecay.set("Decay", 0, 0, 127));
+   midiFLTR.add(fltrSustain.set("Sustain", 0, 0, 127));
+   midiFLTR.add(fltrRelease.set("Release", 0, 0, 127));
+   midiFLTR.add(frequency.set("Frequency", 0, 0, 127));
+   midiFLTR.add(resonnance.set("Resonnance", 0, 0, 127));
+   midiFLTR.add(fltrType.set("FltrType", 0, 0, 2));
+   midiFLTR.add(fltrEnvelop.set("FltrEnvelop", 0, -64, 63));
+   midiFLTR.add(midiFltrSend.set("Send FLTR", false));
 
-    midiAMP.add(ampAttack.set("Attack", 0, 0, 127));
-    midiAMP.add(ampHold.set("Hold", 0, 0, 127));
-    midiAMP.add(ampDecay.set("Decay", 0, 0, 127));
-    midiAMP.add(ampOverdrive.set("Overdrive", 0, 0, 127));
-    midiAMP.add(ampDelay.set("Delay", 0, 0, 127));
-    midiAMP.add(ampReverb.set("Reverb", 0, 0, 127));
-    midiAMP.add(ampPan.set("Pan", 0, -64, 63));
-    midiAMP.add(ampVolume.set("Volume", 0, 0, 127));
-    midiAMP.add(midiAmpSend.set("Send AMP", false));
-
-
-    midiLFO.add(lfoSpeed.set("Speed", 0, -64, 63));
-    midiLFO.add(lfoMultiplier.set("Multiplier", 0, 0, 23));
-    midiLFO.add(lfoFadeInOut.set("Fade", 0, -64, 63));
-    midiLFO.add(lfoDestination.set("Destination", 0, 0, 32));
-    midiLFO.add(lfoWave.set("Wave", 0, 0, 6));
-    midiLFO.add(lfoStartPhase.set("Start", 0, 0, 127));
-    midiLFO.add(lfoMode.set("Mode", 0, 0, 4));
-    midiLFO.add(lfoDepth.set("Depth", 0, -64, 63));
-    midiLFO.add(midiLfoSend.set("Send LFO", false));
-
-    midiDelay.add(delayTime.set("Time", 0, 0, 127));
-    midiDelay.add(delayPingPong.set("PingPong", false));
-    midiDelay.add(delayStereoWidth.set("Stereo Width", 0, -64, 63));
-    midiDelay.add(delayFeedback.set("Feedback", 0, 0, 198));
-    midiDelay.add(delayHighPassFltr.set("HighPass Fltr", 0, 0, 127));
-    midiDelay.add(delayLowPassFltr.set("LowPass Fltr", 0, 0, 127));
-    midiDelay.add(delayReverbSend.set("Reverb Send", 0, 0, 127));
-    midiDelay.add(delayMixVolume.set("Mix Volume", 0, 0, 127));
-    midiDelay.add(midiDelaySend.set("Send DELAY", false));
-
-    midiReverb.add(reverbPreDelay.set("Pre Delay", 0, 0, 127));
-    midiReverb.add(reverbDecayTime.set("Decay Time", 0, 0, 127));
-    midiReverb.add(reverbShelvingFreq.set("Shelving Freq", 0, 0, 127));
-    midiReverb.add(reverbShelvingGain.set("Shelving Gain", 0, 0, 127));
-    midiReverb.add(reverbHighPassFltr.set("HighPass Fltr", 0, 0, 127));
-    midiReverb.add(reverbLowPassFltr.set("LowPass Fltr", 0, 0, 127));
-    midiReverb.add(reverbPrePost.set("Pre COMP / Post COMP", 0, 0, 1));
-    midiReverb.add(reverbMixVolume.set("Mix Volume", 0, 0, 127));
-    midiReverb.add(midiReverbSend.set("Send REVERB", false));
-
-    midiCompressor.add(compressorThreshold.set("Threshold", 0, 0, 127));
-    midiCompressor.add(compressorAttack.set("Attack", 0, 0, 127));
-    midiCompressor.add(compressorRelease.set("Release", 0, 0, 127));
-    midiCompressor.add(compressorMakeUpGain.set("Make Up Gain", 0, 0, 24));
-    midiCompressor.add(compressorPatternVolume.set("Pattern Volume", 0, 0, 127));
-    midiCompressor.add(compressorRatio.set("Ratio", 0, 0, 8));
-    midiCompressor.add(compressorSideChainSource.set("SideChain Source", 0, 0, 8));
-    midiCompressor.add(compressorSideChainFltr.set("SideChain FLTR", 0, -64, 63));
-    midiCompressor.add(compressorDryWetMix.set("Dry/Wet MIX", 0, 0, 127));
-    midiCompressor.add(midiCompressorSend.set("midiCompressorSend", false));
+   midiAMP.add(ampAttack.set("Attack", 0, 0, 127));
+   midiAMP.add(ampHold.set("Hold", 0, 0, 127));
+   midiAMP.add(ampDecay.set("Decay", 0, 0, 127));
+   midiAMP.add(ampOverdrive.set("Overdrive", 0, 0, 127));
+   midiAMP.add(ampDelay.set("Delay", 0, 0, 127));
+   midiAMP.add(ampReverb.set("Reverb", 0, 0, 127));
+   midiAMP.add(ampPan.set("Pan", 0, -64, 63));
+   midiAMP.add(ampVolume.set("Volume", 0, 0, 127));
+   midiAMP.add(midiAmpSend.set("Send AMP", false));
 
 
-    trackTrigGUI.add(midiTrack);
-    trackTrigGUI.add(midiTrig);
+   midiLFO.add(lfoSpeed.set("Speed", 0, -64, 63));
+   midiLFO.add(lfoMultiplier.set("Multiplier", 0, 0, 23));
+   midiLFO.add(lfoFadeInOut.set("Fade", 0, -64, 63));
+   midiLFO.add(lfoDestination.set("Destination", 0, 0, 32));
+   midiLFO.add(lfoWave.set("Wave", 0, 0, 6));
+   midiLFO.add(lfoStartPhase.set("Start", 0, 0, 127));
+   midiLFO.add(lfoMode.set("Mode", 0, 0, 4));
+   midiLFO.add(lfoDepth.set("Depth", 0, -64, 63));
+   midiLFO.add(midiLfoSend.set("Send LFO", false));
 
-    srcFltrGUI.add(midiSrc);
-    srcFltrGUI.add(midiFLTR);
+   midiDelay.add(delayTime.set("Time", 0, 0, 127));
+   midiDelay.add(delayPingPong.set("PingPong", false));
+   midiDelay.add(delayStereoWidth.set("Stereo Width", 0, -64, 63));
+   midiDelay.add(delayFeedback.set("Feedback", 0, 0, 198));
+   midiDelay.add(delayHighPassFltr.set("HighPass Fltr", 0, 0, 127));
+   midiDelay.add(delayLowPassFltr.set("LowPass Fltr", 0, 0, 127));
+   midiDelay.add(delayReverbSend.set("Reverb Send", 0, 0, 127));
+   midiDelay.add(delayMixVolume.set("Mix Volume", 0, 0, 127));
+   midiDelay.add(midiDelaySend.set("Send DELAY", false));
 
-    ampLfoGUI.add(midiAMP);
-    ampLfoGUI.add(midiLFO);
+   midiReverb.add(reverbPreDelay.set("Pre Delay", 0, 0, 127));
+   midiReverb.add(reverbDecayTime.set("Decay Time", 0, 0, 127));
+   midiReverb.add(reverbShelvingFreq.set("Shelving Freq", 0, 0, 127));
+   midiReverb.add(reverbShelvingGain.set("Shelving Gain", 0, 0, 127));
+   midiReverb.add(reverbHighPassFltr.set("HighPass Fltr", 0, 0, 127));
+   midiReverb.add(reverbLowPassFltr.set("LowPass Fltr", 0, 0, 127));
+   midiReverb.add(reverbPrePost.set("Pre COMP / Post COMP", 0, 0, 1));
+   midiReverb.add(reverbMixVolume.set("Mix Volume", 0, 0, 127));
+   midiReverb.add(midiReverbSend.set("Send REVERB", false));
 
-    effectsGUI.add(midiDelay);
-    effectsGUI.add(midiReverb);
-    effectsGUI.add(midiCompressor);
+   midiCompressor.add(compressorThreshold.set("Threshold", 0, 0, 127));
+   midiCompressor.add(compressorAttack.set("Attack", 0, 0, 127));
+   midiCompressor.add(compressorRelease.set("Release", 0, 0, 127));
+   midiCompressor.add(compressorMakeUpGain.set("Make Up Gain", 0, 0, 24));
+   midiCompressor.add(compressorPatternVolume.set("Pattern Volume", 0, 0, 127));
+   midiCompressor.add(compressorRatio.set("Ratio", 0, 0, 8));
+   midiCompressor.add(compressorSideChainSource.set("SideChain Source", 0, 0, 8));
+   midiCompressor.add(compressorSideChainFltr.set("SideChain FLTR", 0, -64, 63));
+   midiCompressor.add(compressorDryWetMix.set("Dry/Wet MIX", 0, 0, 127));
+   midiCompressor.add(midiCompressorSend.set("midiCompressorSend", false));
 
-    mainGui.setPosition(5,2);
-    trackTrigGUI.setPosition(5, 40);
-    srcFltrGUI.setPosition(5, 280);
-    ampLfoGUI.setPosition(206, 2);
-    effectsGUI.setPosition(407, 2);
+
+   trackTrigGUI.add(midiTrack);
+   trackTrigGUI.add(midiTrig);
+
+   srcFltrGUI.add(midiSrc);
+   srcFltrGUI.add(midiFLTR);
+
+   ampLfoGUI.add(midiAMP);
+   ampLfoGUI.add(midiLFO);
+
+   effectsGUI.add(midiDelay);
+   effectsGUI.add(midiReverb);
+   effectsGUI.add(midiCompressor);
+
+   mainGui.setPosition(5,2);
+   trackTrigGUI.setPosition(5, 40);
+   srcFltrGUI.setPosition(5, 280);
+   ampLfoGUI.setPosition(206, 2);
+   effectsGUI.setPosition(407, 2);
 
 
-    channelGUI.addListener(this, &ofxDigitaktControl::listenToChannel);
-    channelUnsigned = 0xB0 | (unsigned char)(channelGUI-1);
+   channelGUI.addListener(this, &ofxDigitaktControl::listenToChannel);
+   channelUnsigned = 0xB0 | (unsigned char)(channelGUI-1);
+    
 }
 
 //--------------------------------------------------------------
@@ -279,14 +285,13 @@ void ofxDigitaktControl::sendSRCMessages(){
     unsigned char bitReductionUnsigned = (unsigned char)srcBitReduction << 0x00;
     unsigned char sampleUnsigned = (unsigned char)srcSampleSlot << 0x00;
     
-    unsigned char startUnsignedMSB = (unsigned char)(floor(srcStart)) << 0x00;
+    unsigned char startUnsignedMSB = ( (unsigned char)(ofMap(floor(srcStart), 0, 120, 0, 127) )) << 0x00;
     unsigned char startUnsignedLSB = (unsigned char)(ofMap(srcStart - floor(srcStart), 0, 1, 0, 127)) << 0x00;
     
-    unsigned char lenghtUnsignedMSB = (unsigned char)(floor(srcFinish)) << 0x00;
+    unsigned char lenghtUnsignedMSB = ( (unsigned char)(ofMap(floor(srcFinish), 0, 120, 0, 127) )) << 0x00;
     unsigned char lengthUnsignedLSB = (unsigned char)(ofMap(srcFinish - floor(srcFinish), 0, 1, 0, 127)) << 0x00;
     
-    
-    unsigned char loopUnsignedMSB = (unsigned char)(floor(srcLoop)) << 0x00;
+    unsigned char loopUnsignedMSB = ( (unsigned char)(ofMap(floor(srcLoop), 0, 120, 0, 127) )) << 0x00;
     unsigned char loopUnsignedLSB = (unsigned char)(ofMap(srcLoop - floor(srcLoop), 0, 1, 0, 127)) << 0x00;
     
     unsigned char sampleLevelUnsigned = (unsigned char)srcSampleLevel << 0x00;
@@ -297,8 +302,8 @@ void ofxDigitaktControl::sendSRCMessages(){
     //NRPN messages
     addNRPNMessage(&midiSysExMsg, SRCTUNEMSBHEX, SRCTUNELSBHEX, tuneUnsignedMSB, tuneUnsignedLSB);
     addNRPNMessage(&midiSysExMsg, SRCSTARTMSBHEX, SRCSTARTLSBHEX, startUnsignedMSB, startUnsignedLSB);
-    addNRPNMessage(&midiSysExMsg, SRCLENGTHMSBHEX, SRCLENGTHMSBHEX, lenghtUnsignedMSB, lengthUnsignedLSB);
-    addNRPNMessage(&midiSysExMsg, SRCLOOPMSBHEX, SRCLOOPLSBHEX, loopUnsignedMSB, loopUnsignedMSB);
+    addNRPNMessage(&midiSysExMsg, SRCLENGTHMSBHEX, SRCLENGTHLSBHEX, lenghtUnsignedMSB, lengthUnsignedLSB);
+    addNRPNMessage(&midiSysExMsg, SRCLOOPMSBHEX, SRCLOOPLSBHEX, loopUnsignedMSB, loopUnsignedLSB);
     
     // CC Messages
     midiSysExMsg.push_back(channelUnsigned);

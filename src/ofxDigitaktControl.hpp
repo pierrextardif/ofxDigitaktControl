@@ -27,6 +27,7 @@ class ofxDigitaktControl{
     
     
     void setup();
+    void setupGUI();
     void update();
     void draw();
     void exit();
